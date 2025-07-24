@@ -63,4 +63,4 @@ jobs:
 
       - name: Lint with Pylint
         run: |
-          pylint --rcfile=.pylintrc  ./tasks *.py
+          pylint --rcfile=.pylintrc  ./dags *.py
