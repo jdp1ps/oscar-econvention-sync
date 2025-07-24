@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.sdk import DAG
 
+from tasks.example_task import example_task
+
 with DAG(
         "test",
         default_args={
@@ -16,15 +18,16 @@ with DAG(
         catchup=False,
         tags=["example"],
 ) as dag:
-    t1 = BashOperator(
-        task_id="print_date",
-        bash_command="date",
+    dummy_input_data = [
+        {"id": "1", "name": "Alice"},
+        {"id": "2", "name": "Bob"},
+        {"id": "1", "age": 30},
+        {"id": "2", "age": 25},
+    ]
+    dummy_result = example_task(input_data=dummy_input_data)
+    dummy_result2 = example_task(input_data=dummy_result)
+    print_result = BashOperator(
+        task_id="print_result",
+        bash_command=f"echo {dummy_result2}"
     )
-
-    t2 = BashOperator(
-        task_id="sleep",
-        depends_on_past=False,
-        bash_command="sleep 5",
-        retries=3,
-    )
-    t1 >> t2
+    dummy_result2 >> print_result
