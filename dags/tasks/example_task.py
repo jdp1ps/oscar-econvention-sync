@@ -15,7 +15,7 @@ def example_task(input_data: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     """
     combined_results = defaultdict(dict)
     for entry in input_data:
-        identifier = entry.get('id', 'default_id')
+        identifier = entry.get("id", "default_id")
         combined_results[identifier].update(entry)
     logger.info("Processed input data: %s", combined_results)
     return combined_results
