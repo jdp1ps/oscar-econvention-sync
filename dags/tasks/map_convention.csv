@@ -1,0 +1,21 @@
+﻿Sharepoint;BDD OSCAR (project/activity/activitypcruinfo)
+ID;activity_id
+Title;label
+CreatedBy;datecreate
+Porteur;persons
+StructurePorteur;activityorganization
+Referent DAJI;persons
+Partenaire;organizationactivity
+DescriptionConvention;description
+LecteursComplémentaires;persons
+SousType ;activitytype_id
+DateDemarrage;datestart
+TermeConvention;dateend
+Depenses;financialImpact
+Recettes;financialImpact
+CommentPJ;information
+ResponsablePorteur;persons
+MontantConvention;amount
+Etape;milestones
+TypeConvention;label(typedocument)
+Attachments (Convention);contractdocument
