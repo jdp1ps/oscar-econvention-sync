@@ -11,16 +11,16 @@ from tasks.etl import (
 import os
 
 with DAG(
-        "etl_prototype",
-        default_args={
-            "retries": 1,
-            "retry_delay": timedelta(minutes=5),
-        },
-        description="A prototype which enables to ETL process in order to synchronize data between Oscar and eConvention",
-        schedule=timedelta(days=1),
-        start_date=datetime(2025, 7, 1),
-        catchup=False,
-        tags=["prototype"],
+    "etl_prototype",
+    default_args={
+        "retries": 1,
+        "retry_delay": timedelta(minutes=5),
+    },
+    description="A prototype which enables to ETL process in order to synchronize data between Oscar and eConvention",
+    schedule=timedelta(days=1),
+    start_date=datetime(2025, 7, 1),
+    catchup=False,
+    tags=["prototype"],
 ) as dag:
 
     airflow_path = os.getenv("AIRFLOW_HOME", "/home/user/airflow")
@@ -39,7 +39,7 @@ with DAG(
     print_result = BashOperator(
         task_id="print_result",
         bash_command="echo '{{ ti.xcom_pull(task_ids=\"curl_load_file\") }}'",
-        dag=dag
+        dag=dag,
     )
 
     curl_local >> raw_data >> transformed_data >> loaded_data >> print_result
