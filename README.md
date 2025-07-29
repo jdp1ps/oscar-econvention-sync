@@ -37,3 +37,16 @@ airflow standalone
 
 Access the Airflow UI at `http://localhost:8080` and log in with credentials which were provided during the Airflow
 setup.
+
+To run the etl_prototype DAG, you must create a folder named data inside your AIRFLOW_HOME directory, containing a JSON file called test_convention.json.
+You can create the file by copying and pasting the following content:
+```bash
+[
+  {
+    "Titre": "test",
+    "Reference": "test",
+    "Porteur": "econvention",
+    "Date de création": "2025-05-06T13:30:26Z"
+  }
+]
+```
