@@ -1,0 +1,32 @@
+[
+  {
+    "Titre": "test",
+    "Reference": "test",
+    "Porteur": "econvention",
+    "Email Porteur": "econvention@univparis1fr.onmicrosoft.com",
+    "Structure Porteur": null,
+    "Date de création": "2025-05-06T13:30:26Z",
+    "Partenaire": [
+      {
+        "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedReference",
+        "Id": 1,
+        "Value": "Neos Test"
+      }
+    ],
+    "Créateur": {
+      "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+      "Claims": "i:0#.f|membership|econvention@univparis1fr.onmicrosoft.com",
+      "DisplayName": "econvention",
+      "Email": "econvention@univparis1fr.onmicrosoft.com",
+      "Picture": "https://univparis1fr.sharepoint.com/sites/proj_econvention-test/_layouts/15/UserPhoto.aspx?Size=L&AccountName=econvention@univparis1fr.onmicrosoft.com",
+      "Department": null,
+      "JobTitle": null
+    },
+    "Origine de la convention": {
+      "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedReference",
+      "Id": 1,
+      "Value": "Interne"
+    },
+    "Type de la convention": null
+  }
+]
