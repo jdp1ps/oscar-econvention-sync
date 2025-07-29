@@ -1,14 +1,12 @@
+import os
 from datetime import datetime, timedelta
-
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.sdk import DAG
-from tasks.etl import (
+from tasks.extract import (
     extract_from_econvention,
-    transform_from_econvention_to_oscar,
-    load,
 )
-
-import os
+from tasks.transform import transform_from_econvention_to_oscar
+from tasks.load import load
 
 with DAG(
     "etl_prototype",
@@ -16,23 +14,21 @@ with DAG(
         "retries": 1,
         "retry_delay": timedelta(minutes=5),
     },
-    description="A prototype which enables to ETL process in order to synchronize data between Oscar and eConvention",
+    description="A prototype ETL process to synchronize data between Oscar and eConvention",
     schedule=timedelta(days=1),
     start_date=datetime(2025, 7, 1),
     catchup=False,
     tags=["prototype"],
 ) as dag:
-
-    airflow_path = os.getenv("AIRFLOW_HOME", "/home/user/airflow")
-    input_file_path = f"{airflow_path}/data/test_econvention.json"
-
+    AIRFLOW_HOME_PATH = os.getenv("AIRFLOW_HOME", "/home/user/airflow")
+    INPUT_FILE_PATH = f"{AIRFLOW_HOME_PATH}/data/test_econvention.json"
     curl_local = BashOperator(
         task_id="curl_local_file",
-        bash_command=f"curl file://{airflow_path}/data/test_econvention.json",
+        bash_command=f"curl file://{AIRFLOW_HOME_PATH}/data/test_econvention.json",
         do_xcom_push=True,
         dag=dag,
     )
-    raw_data = extract_from_econvention(input_file_path)
+    raw_data = extract_from_econvention(INPUT_FILE_PATH)
     transformed_data = transform_from_econvention_to_oscar(raw_data)
     loaded_data = load(transformed_data)
 
@@ -42,4 +38,4 @@ with DAG(
         dag=dag,
     )
 
-    curl_local >> raw_data >> transformed_data >> loaded_data >> print_result
+    curl_local >> raw_data >> transformed_data >> loaded_data >> print_result # pylint: disable=pointless-statement
