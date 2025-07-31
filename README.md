@@ -69,3 +69,23 @@ curl -X GET http://localhost:8080/api/v2/dags \
   -H "Authorization: Bearer <JWT access_token>"
 ```
 
+To manually trigger the DAG and pass parameters via the Airflow REST API, use the following command:
+```bash
+curl -X POST "http://localhost:8080/api/v2/dags/<dag_id>/dagRuns" \
+-H "Authorization: Bearer <JWT access_token>" \
+-H "Content-Type: application/json" \
+-d '{
+  "conf": {
+    "source": "external_system",
+    "timestamp": "2025-07-31T12:00:00Z",
+    "data": {
+      "id": 1,
+      "title": "Hello from outside",
+      "body": "This is an external payload"
+    }
+  },
+  "logical_date": "2025-07-31T12:00:00Z"
+}'
+```
+Alternatively, you can also trigger the DAG and provide parameters directly via the Airflow web UI by selecting the DAG and using the "Trigger DAG" button with the JSON configuration.
+
