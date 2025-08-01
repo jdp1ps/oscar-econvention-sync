@@ -5,9 +5,17 @@ from utils.mapping import map_convention, defaults
 @task
 def transform_from_econvention_to_oscar(data: list[dict]) -> list[dict]:
     """
+    Maps econvention fields to OSCAR format using a predefined dictionary (map_convention).
 
-    :param data:
-    :return:
+    For most fields, the mapping is direct (e.g., 'Reference' → 'uid').
+    Fields mapped to 'persons' or 'organizations' are grouped into subdictionaries.
+    Missing keys are completed with default values.
+
+    Args:
+        data (list[dict]): A list of dictionaries containing raw data from econvention.
+
+    Returns:
+        list[dict]: A list of transformed dictionaries ready for OSCAR ingestion.
     """
     mapping = map_convention
 
