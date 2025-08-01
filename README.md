@@ -94,7 +94,7 @@ Once logged in :
 3. In the configuration modal, pass a JSON payload in the following format:
 ```bash
 {
-  "conf": [
+  "items": [
     {
       "Reference": "123",
       "Titre": "Sample title"
