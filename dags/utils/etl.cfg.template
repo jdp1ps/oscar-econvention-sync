@@ -1,0 +1,4 @@
+[paths]
+AIRFLOW_HOME = /home/user/airflow
+AIRFLOW_ETL_LOAD = /home/user/airflow/data
+OSCAR_HOME = /var/www/oscar

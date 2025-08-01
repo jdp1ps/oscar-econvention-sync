@@ -19,7 +19,7 @@ export AIFLOW_HOME=/path/to/your/aiflow/home
 To check your database settings, run :
 
 ```bash
-airflow config get-value database sql_alchemy_conn
+airflow utils get-value database sql_alchemy_conn
 ```
 
 On some Ubuntu systems, you may encounter an error with asyncpg.
@@ -37,10 +37,12 @@ airflow standalone
 
 Access the Airflow UI at `http://localhost:8080` and log in with credentials which were provided during the Airflow
 setup.
----
-# Connecting to Apache Airflow Public API with JWT
 
-Official documentation : https://airflow.apache.org/docs/apache-airflow/stable/security/api.html
+---
+
+## Connecting to Apache Airflow Public API with JWT
+[
+]()Official documentation : https://airflow.apache.org/docs/apache-airflow/stable/security/api.html
 
 This section explains how to authenticate and interact with Apache Airflow's public REST API (v2) using curl and JWT authentication, assuming the SimpleAuthManager is configured.
 
@@ -69,23 +71,35 @@ curl -X GET http://localhost:8080/api/v2/dags \
   -H "Authorization: Bearer <JWT access_token>"
 ```
 
-To manually trigger the DAG and pass parameters via the Airflow REST API, use the following command:
+---
+
+## Triggering the ETL pipeline via the Airflow Web UI
+
+An `etl.cfg.template` file is provided as a template. It contains the required configuration variables (e.g., paths) for the DAG to function properly.
+
+To use it:
+
 ```bash
-curl -X POST "http://localhost:8080/api/v2/dags/<dag_id>/dagRuns" \
--H "Authorization: Bearer <JWT access_token>" \
--H "Content-Type: application/json" \
--d '{
-  "conf": {
-    "source": "external_system",
-    "timestamp": "2025-07-31T12:00:00Z",
-    "data": {
-      "id": 1,
-      "title": "Hello from outside",
-      "body": "This is an external payload"
-    }
-  },
-  "logical_date": "2025-07-31T12:00:00Z"
-}'
+cp dags/utils/etl.cfg.template dags/utils/etl.cfg
 ```
-Alternatively, you can also trigger the DAG and provide parameters directly via the Airflow web UI by selecting the DAG and using the "Trigger DAG" button with the JSON configuration.
+Then edit etl.cfg to match your local environment paths.
+
+Access the Airflow UI at http://localhost:8080 and log in with credentials which were provided during the Airflow setup.
+
+Once logged in : 
+1. Enable the DAG named dag_etl.
+
+2. Click on the Trigger DAG button.
+
+3. In the configuration modal, pass a JSON payload in the following format:
+```bash
+{
+  "conf": [
+    {
+      "Reference": "123",
+      "Titre": "Sample title"
+    }
+  ]
+}
+```
 

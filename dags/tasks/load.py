@@ -1,0 +1,27 @@
+import os
+import json
+import re
+from airflow.decorators import task
+from utils.config import AIRFLOW_ETL_LOAD_PATH
+
+
+@task
+def load(data: list[dict], **context) -> list[dict]:
+    """
+    Serializes the transformed data into a JSON file with a unique name based on logical date.
+
+    Args:
+        data: The final list of dictionaries to be loaded.
+
+    Returns:
+        Path to the generated JSON file.
+    """
+    logical_date = str(context["logical_date"])
+    safe_logical_date = re.sub(r"[: ]", "_", logical_date)
+
+    output_filename = f"output_for_oscar_{safe_logical_date}.json"
+    load_output_path = os.path.join(AIRFLOW_ETL_LOAD_PATH, output_filename)
+
+    with open(load_output_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+    return load_output_path
