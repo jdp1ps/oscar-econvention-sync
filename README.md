@@ -19,7 +19,7 @@ export AIFLOW_HOME=/path/to/your/aiflow/home
 To check your database settings, run :
 
 ```bash
-airflow utils get-value database sql_alchemy_conn
+airflow config get-value database sql_alchemy_conn
 ```
 
 On some Ubuntu systems, you may encounter an error with asyncpg.
