@@ -103,3 +103,27 @@ Once logged in :
 }
 ```
 
+---
+
+## Triggering the ETL pipeline via curl
+
+Make sure the requirements from the previous two sections are met before proceeding with this step.
+
+You can copy and paste the following POST request by replacing the logical date:
+
+```bash
+curl -X POST http://localhost:8080/api/v2/dags/dag_etl/dagRuns   
+  -H "Content-Type: application/json"   
+  -H "Authorization: Bearer <JWT access_token>
+  -d '{
+    "logical_date": "YYYY-MM-DDTHH:mm:ssZ",
+    "conf": {
+      "items":[
+      {
+        "Reference": "123",
+        "Titre": "Sample title"
+      }
+    ]}
+  }'
+```
+
