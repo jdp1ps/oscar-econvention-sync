@@ -1,0 +1,40 @@
+[
+  {
+    "uid": "test1",
+    "acronym": "",
+    "projectlabel": "",
+    "label": "test1",
+    "financialImpact": "Aucune",
+    "type": "",
+    "pfi": "",
+    "organizations": {
+      "Sticture Porteur": ["Structure1"],
+      "Partenaire": ["Partenaire 1"]
+    },
+    "persons": {
+      "Porteur": ["econvention"],
+      "Créateur": ["econvention"]
+    },
+    "milestones": [],
+    "status": 200
+  },
+    {
+    "uid": "test2",
+    "acronym": null,
+    "projectlabel": null,
+    "label": "test2",
+    "financialImpact": "Aucune",
+    "type": "",
+    "pfi": "",
+    "organizations": {
+      "Sticture Porteur": ["Structure1"],
+      "Partenaire": ["Partenaire 1","Partenaire 2"]
+    },
+    "persons": {
+      "Porteur": ["Amel Dabiba-Mahdbi"],
+      "Créateur": ["econvention"]
+    },
+    "milestones": [],
+    "status": 200
+  }
+]

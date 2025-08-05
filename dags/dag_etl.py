@@ -17,16 +17,16 @@ def extract_from_econvention(**context) -> list[dict]:
     :return:
         list of dictionaries
     """
-    conf_dict = context["dag_run"].conf
-    conf = conf_dict.get("items")
-    if conf is None:
-        raise ValueError("Missing 'conf' key in dag_run.conf.")
-    if not isinstance(conf, list):
-        raise ValueError("Expected conf to be a list of dictionaries.")
-    if not all(isinstance(item, dict) for item in conf):
-        raise ValueError("All items in the list should be dictionaries.")
+    conf_json = context["dag_run"].conf
+    items = conf_json.get("items")
+    if items is None:
+        raise ValueError("Missing 'items' key in dag_run.conf.")
+    if not isinstance(items, list):
+        raise ValueError("Expected 'items' to be a list of dictionaries.")
+    if not all(isinstance(item, dict) for item in items):
+        raise ValueError("All items in 'items' must be dictionaries.")
 
-    return conf
+    return items
 
 
 # pylint: disable=unexpected-keyword-arg
@@ -50,6 +50,4 @@ with DAG(
         ),
     )
     # pylint: disable=pointless-statement
-    (
-        transformed_data >> loaded_data >> import_activity_oscar
-    )
+    (transformed_data >> loaded_data >> import_activity_oscar)

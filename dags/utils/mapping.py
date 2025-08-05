@@ -34,3 +34,5 @@ defaults = {
     "milestones": [],
     "status": 200,
 }
+
+oscar_special_keys = {"persons", "organizations"}
