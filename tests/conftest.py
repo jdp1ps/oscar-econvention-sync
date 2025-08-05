@@ -18,6 +18,7 @@ dags_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dags"
 if dags_path not in sys.path:
     sys.path.insert(0, dags_path)
 
+
 @pytest.fixture(name="unique_logical_date")
 def unique_logical_date() -> pendulum.DateTime:
     """
@@ -58,13 +59,14 @@ def oscar_expected_data():
     with open(DATA_DIR / "oscar_expected_data.json", encoding="utf-8") as f:
         return json.load(f)
 
-@pytest.fixture(scope='function', autouse=True, name="initialize_airflow_db")
+
+@pytest.fixture(scope="function", autouse=True, name="initialize_airflow_db")
 def initialize_airflow_db() -> None:
     """
     Initialize the airflow database for testing and reset the database before each test
     :return: None
     """
-    os.environ['AIRFLOW__CORE__SQL_ALCHEMY_CONN'] = "sqlite:////:memory:"
+    os.environ["AIRFLOW__CORE__SQL_ALCHEMY_CONN"] = "sqlite:////:memory:"
     resetdb()
     settings.configure_orm()
 
@@ -75,7 +77,7 @@ def fixture_dagbag() -> DagBag:
     Create a DagBag for testing dag loading
     :return: DagBag
     """
-    airflow_home = os.getenv('AIRFLOW_HOME')
+    airflow_home = os.getenv("AIRFLOW_HOME")
     assert airflow_home is not None, "AIRFLOW_HOME is not set"
     dag_folder = f"{airflow_home}/dags"
     print(f"Dag folder is : {dag_folder}")
@@ -93,17 +95,17 @@ def dag_fixture(request: SubRequest) -> DAG:
     - other keys: The values of the parameters to be passed to the task
     :return: The DAG object
     """
-    task_name = request.param['task_name']
-    param_names = request.param['param_names']
+    task_name = request.param["task_name"]
+    param_names = request.param["param_names"]
     assert isinstance(param_names, list)
     assert all(isinstance(name, str) for name in param_names)
     args = [request.param[name] for name in param_names]
 
     # pylint: disable=unexpected-keyword-arg
     with DAG(
-            dag_id=TEST_DAG_ID,
-            schedule="@daily",
-            start_date=DATA_INTERVAL_START,
+        dag_id=TEST_DAG_ID,
+        schedule="@daily",
+        start_date=DATA_INTERVAL_START,
     ) as created_dag:
         task = import_from_path(task_name)
         task(*args)
