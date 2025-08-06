@@ -10,10 +10,10 @@ Install dependencies using pip:
 pip install -r requirements.txt
 ```
 
-Export your AIFLOW_HOME environment variable in the current shell:
+Export your AIRFLOW_HOME environment variable in the current shell:
 
 ```bash
-export AIFLOW_HOME=/path/to/your/aiflow/home
+export AIRFLOW_HOME=/path/to/your/airflow/home
 ```
 
 To check your database settings, run :
@@ -41,8 +41,8 @@ setup.
 ---
 
 ## Connecting to Apache Airflow Public API with JWT
-[
-]()Official documentation : https://airflow.apache.org/docs/apache-airflow/stable/security/api.html
+
+[Official documentation](https://airflow.apache.org/docs/apache-airflow/stable/security/api.html)
 
 This section explains how to authenticate and interact with Apache Airflow's public REST API (v2) using curl and JWT authentication, assuming the SimpleAuthManager is configured.
 
@@ -127,3 +127,19 @@ curl -X POST http://localhost:8080/api/v2/dags/dag_etl/dagRuns
   }'
 ```
 
+---
+
+## Running Tests
+
+To run the full test suite (unit and DAG integration tests), use:
+
+```bash
+APP_ENV=TEST pytest
+```
+
+Make sure the following test data files are present in the tests/data directory:
+
+1. econvention_raw_data.json
+2. oscar_expected_data.json
+
+These files are used to simulate real eConvention input and expected OSCAR output.
