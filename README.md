@@ -127,6 +127,13 @@ curl -X POST http://localhost:8080/api/v2/dags/dag_etl/dagRuns
   }'
 ```
 
+If your POST request to trigger the ETL pipeline is queued, it may be because the DAG is currently paused.
+
+You can either enable the DAG via the Airflow Web UI or run this command in your terminal:
+```bash
+airflow dags unpause dag_etl
+```
+
 ---
 
 ## Running Tests
@@ -142,4 +149,4 @@ Make sure the following test data files are present in the tests/data directory:
 1. econvention_raw_data.json
 2. oscar_expected_data.json
 
-These files are used to simulate real eConvention input and expected OSCAR output.
+These files are used to simulate E-convention input and expected OSCAR output.
