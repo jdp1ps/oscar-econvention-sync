@@ -9,12 +9,12 @@ from utils.config import OSCAR_HOME_PATH
 
 # pylint: disable=unexpected-keyword-arg
 with DAG(
-    dag_id="dag_etl",
+    dag_id="econvention_to_oscar",
     start_date=datetime(2025, 7, 30),
     schedule=None,
     catchup=False,
     tags=["api", "json", "etl", "post"],
-) as dag_etl:
+) as econvention_to_oscar:
 
     raw_data = extract_from_econvention()
     transformed_data = transform_from_econvention_to_oscar(raw_data)

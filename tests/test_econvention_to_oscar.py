@@ -16,7 +16,7 @@ def test_dag_loaded(dagbag):
     """
     Test dag loading
     """
-    dag = dagbag.get_dag(dag_id="dag_etl")
+    dag = dagbag.get_dag(dag_id="econvention_to_oscar")
     assert dagbag.import_errors == {}
     assert dag is not None
     assert len(dag.tasks) == 4
@@ -26,7 +26,7 @@ def test_dag_structure(dagbag):
     """
     Test that the DAG has the correct structure
     """
-    dag = dagbag.get_dag(dag_id="dag_etl")
+    dag = dagbag.get_dag(dag_id="econvention_to_oscar")
     expected_structure = {
         "extract_from_econvention": ["transform_from_econvention_to_oscar"],
         "transform_from_econvention_to_oscar": ["load"],
@@ -44,7 +44,7 @@ def test_extract_from_econvention(dagbag, econvention_raw_data, unique_logical_d
     This test uses static sample data located in `/tests/data/` to ensure repeatability.
     """
 
-    dag = dagbag.get_dag(dag_id="dag_etl")
+    dag = dagbag.get_dag(dag_id="econvention_to_oscar")
     dag_run = create_dag_run(
         dag=dag,
         data_interval_start=DATA_INTERVAL_START,
