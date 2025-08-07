@@ -1,30 +1,19 @@
-from configparser import ConfigParser
+from dotenv import load_dotenv
 import os
 
-parser = ConfigParser()
+# Load .env from the project root (two levels up from this file)
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+dotenv_path = os.path.join(ROOT_DIR, ".env")
+load_dotenv(dotenv_path)
 
-config_file_path = os.path.join(os.path.dirname(__file__), "etl.cfg")
-parser.read(config_file_path)
-
-
-def get_config(section: str, option: str) -> str:
+def get_env_var(key: str) -> str:
     """
-    Retrieve a configuration value from the etl.cfg file.
-    Args:
-        section (str): The section name in the configuration file.
-        option (str): The option/key name within the section.
-
-    Returns:
-        str: The value corresponding to the section and option.
-
-    Raises:
-        EnvironmentError: If the section or option is missing in the configuration file.
+    Get an environment variable or raise an error if missing.
     """
-    if parser.has_section(section) and parser.has_option(section, option):
-        return parser.get(section, option)
-    raise EnvironmentError(f"Missing [{section}] {option} in etl.cfg")
+    value = os.getenv(key)
+    if value is None:
+        raise EnvironmentError(f"Missing environment variable: {key}")
+    return value
 
-
-AIRFLOW_HOME_PATH = get_config("paths", "AIRFLOW_HOME")
-AIRFLOW_ETL_LOAD_PATH = get_config("paths", "AIRFLOW_ETL_LOAD")
-OSCAR_HOME_PATH = get_config("paths", "OSCAR_HOME")
+ECONVENTION_TO_OSCAR_OUTPUT_DIR = get_env_var("ECONVENTION_TO_OSCAR_OUTPUT_DIR")
+OSCAR_HOME_PATH = get_env_var("OSCAR_HOME")

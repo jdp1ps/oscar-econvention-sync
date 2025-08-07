@@ -75,14 +75,14 @@ curl -X GET http://localhost:8080/api/v2/dags \
 
 ## Triggering the ETL pipeline via the Airflow Web UI
 
-An `etl.cfg.template` file is provided as a template. It contains the required configuration variables (e.g., paths) for the DAG to function properly.
+An `.env.example` file is provided as a template. It contains the required configuration variables (e.g., paths) for the DAG to function properly.
 
 To use it:
 
 ```bash
-cp dags/utils/etl.cfg.template dags/utils/etl.cfg
+cp .env.example .env
 ```
-Then edit etl.cfg to match your local environment paths.
+Then edit .env to match your local environment paths.
 
 Access the Airflow UI at http://localhost:8080 and log in with credentials which were provided during the Airflow setup.
 

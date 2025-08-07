@@ -2,7 +2,7 @@ import os
 import json
 import re
 from airflow.decorators import task
-from utils.config import AIRFLOW_ETL_LOAD_PATH
+from utils.config import ECONVENTION_TO_OSCAR_OUTPUT_DIR
 
 
 @task
@@ -20,7 +20,7 @@ def load(data: list[dict], **context) -> list[dict]:
     safe_logical_date = re.sub(r"[: ]", "_", logical_date)
 
     output_filename = f"output_for_oscar_{safe_logical_date}.json"
-    load_output_path = os.path.join(AIRFLOW_ETL_LOAD_PATH, output_filename)
+    load_output_path = os.path.join(ECONVENTION_TO_OSCAR_OUTPUT_DIR, output_filename)
 
     with open(load_output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
