@@ -30,7 +30,7 @@ def create_dag_run(
     data_interval_start: datetime,
     data_interval_end: datetime,
     logical_date: datetime,
-    conf_payload: dict,
+    conf_data: dict = None,
 ) -> DagRun:
     """
     Create a DAG run for the given DAG
@@ -38,7 +38,7 @@ def create_dag_run(
     :param data_interval_start: datetime object representing the start of the data interval
     :param data_interval_end: datetime object representing the end of the data interval
     :param logical_date: datetime given by pendulum
-    :param conf: Data to input into the DAG
+    :param conf_data: Data to input into the DAG
     :return: The created DAG run
     """
     dag_run = dag.create_dagrun(
@@ -50,7 +50,7 @@ def create_dag_run(
         run_type=DagRunType.MANUAL,
         run_after=datetime.datetime.now(tz=pendulum.UTC),
         triggered_by=DagRunTriggeredByType.TEST,
-        conf=conf_payload,
+        conf=conf_data if not None else {},
     )
     return dag_run
 
@@ -80,14 +80,3 @@ def import_from_path(path: str) -> callable:
     print(f"Importing task {function_name} from module {module_name}")
     module = __import__(module_name, fromlist=[function_name])
     return getattr(module, function_name)
-
-
-# pylint: disable=unexpected-keyword-arg
-with DAG(
-    dag_id="dag_test_transform_only",
-    start_date=pendulum.datetime(2025, 1, 1, tz="UTC"),
-    schedule=None,
-    catchup=False,
-    tags=["test"],
-) as dag_test:
-    pass

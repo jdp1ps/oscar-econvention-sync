@@ -1,6 +1,7 @@
-import json
 import datetime
+import json
 import time
+import pytest
 from airflow.utils.state import TaskInstanceState
 from tests.utils.dag import (
     assert_dag_dict_equal,
@@ -9,34 +10,32 @@ from tests.utils.dag import (
     create_dag_run,
     create_task_instance,
 )
-from dags.tasks.transform import transform_econvention_to_oscar
 
 
-def test_dag_loaded(dagbag):
+def test_dag_loaded(econvention_to_oscar_dag):
     """
     Test dag loading
     """
-    dag = dagbag.get_dag(dag_id="econvention_to_oscar")
-    assert dagbag.import_errors == {}
-    assert dag is not None
-    assert len(dag.tasks) == 4
+    assert econvention_to_oscar_dag is not None
+    assert len(econvention_to_oscar_dag.tasks) == 4
 
 
-def test_dag_structure(dagbag):
+def test_dag_structure(econvention_to_oscar_dag):
     """
     Test that the DAG has the correct structure
     """
-    dag = dagbag.get_dag(dag_id="econvention_to_oscar")
     expected_structure = {
         "extract_from_econvention": ["transform_from_econvention_to_oscar"],
         "transform_from_econvention_to_oscar": ["load"],
         "load": ["load_to_oscar"],
         "load_to_oscar": [],  # END
     }
-    assert_dag_dict_equal(expected_structure, dag)
+    assert_dag_dict_equal(expected_structure, econvention_to_oscar_dag)
 
 
-def test_extract_from_econvention(dagbag, econvention_raw_data, unique_logical_date):
+def test_extract_from_econvention(
+    econvention_to_oscar_dag, econvention_raw_data, unique_logical_date
+):
     """
     Test the `extract_from_econvention` function to verify correct parsing
     and loading of JSON data used in the Airflow DAG pipeline.
@@ -44,19 +43,58 @@ def test_extract_from_econvention(dagbag, econvention_raw_data, unique_logical_d
     This test uses static sample data located in `/tests/data/` to ensure repeatability.
     """
 
-    dag = dagbag.get_dag(dag_id="econvention_to_oscar")
     dag_run = create_dag_run(
-        dag=dag,
+        dag=econvention_to_oscar_dag,
         data_interval_start=DATA_INTERVAL_START,
         data_interval_end=DATA_INTERVAL_END,
         logical_date=unique_logical_date,
-        conf_payload={"items": econvention_raw_data},
+        conf_data={"items": econvention_raw_data},
     )
-    ti = create_task_instance(dag, dag_run, "extract_from_econvention")
+    ti = create_task_instance(
+        econvention_to_oscar_dag, dag_run, "extract_from_econvention"
+    )
     assert ti.state == TaskInstanceState.SUCCESS
 
 
-def test_transform_econvention_to_oscar(econvention_raw_data, oscar_expected_data):
+TASK_NAME = (
+    "dags.tasks.transform_from_econvention_to_oscar"
+    ".transform_from_econvention_to_oscar"
+)
+
+
+@pytest.mark.parametrize(
+    "dag_with_parameter",
+    [
+        {
+            "task_name": TASK_NAME,
+            "param": [
+                {
+                    "Titre": "test1",
+                    "Reference": "test1",
+                    "Porteur": "econvention",
+                    "Sticture Porteur": "Structure1",
+                    "Partenaire": [{"DisplayName": "Partenaire 1"}],
+                    "Créateur": {"DisplayName": "econvention"},
+                },
+                {
+                    "Titre": "test2",
+                    "Reference": "test2",
+                    "Porteur": "Amel Dabiba-Mahdbi",
+                    "Sticture Porteur": "Structure1",
+                    "Partenaire": [
+                        {"DisplayName": "Partenaire 1"},
+                        {"DisplayName": "Partenaire 2"},
+                    ],
+                    "Créateur": {"DisplayName": "econvention"},
+                },
+            ],
+        }
+    ],
+    indirect=True,
+)
+def test_transform_econvention_to_oscar(
+    dag_with_parameter, oscar_expected_data, unique_logical_date
+):
     """
     Test the `transform_econvention_to_oscar` function to ensure that it correctly
     converts raw eConvention data into the format expected by the OSCAR system.
@@ -79,6 +117,18 @@ def test_transform_econvention_to_oscar(econvention_raw_data, oscar_expected_dat
             item["acronym"] = date_iso
         if "projectlabel" in item:
             item["projectlabel"] = date_iso
+    dag_run = create_dag_run(
+        dag=dag_with_parameter,
+        data_interval_start=DATA_INTERVAL_START,
+        data_interval_end=DATA_INTERVAL_END,
+        logical_date=unique_logical_date,
+    )
+    ti = create_task_instance(
+        dag_with_parameter, dag_run, "transform_from_econvention_to_oscar"
+    )
+    assert ti.state == TaskInstanceState.SUCCESS
     assert json.dumps(
-        transform_econvention_to_oscar(econvention_raw_data), sort_keys=True, indent=4
-    ) == json.dumps(oscar_expected_data, sort_keys=True, indent=4)
+        ti.xcom_pull(task_ids="transform_from_econvention_to_oscar"),
+        sort_keys=True,
+        indent=2,
+    ) == json.dumps(oscar_expected_data, sort_keys=True, indent=2)
