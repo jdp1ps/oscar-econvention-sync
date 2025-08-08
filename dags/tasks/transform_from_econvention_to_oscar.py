@@ -51,7 +51,8 @@ def nest_special_keys(item: dict, value: dict, econvention_key) -> dict:
     return item
 
 
-def transform_econvention_to_oscar(data: list[dict]) -> list[dict]:
+@task
+def transform_from_econvention_to_oscar(data: list[dict]) -> list[dict]:
     """
     Maps econvention fields to OSCAR format using a predefined dictionary (map_convention).
 
@@ -91,9 +92,3 @@ def transform_econvention_to_oscar(data: list[dict]) -> list[dict]:
         transformed_data.append(transformed_item)
 
     return transformed_data
-
-
-@task
-def transform_from_econvention_to_oscar(data: list[dict]) -> list[dict]:
-    """Wrapper for transform_econvention_to_oscar."""
-    return transform_econvention_to_oscar(data)

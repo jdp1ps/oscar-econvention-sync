@@ -75,19 +75,19 @@ curl -X GET http://localhost:8080/api/v2/dags \
 
 ## Triggering the ETL pipeline via the Airflow Web UI
 
-An `etl.cfg.template` file is provided as a template. It contains the required configuration variables (e.g., paths) for the DAG to function properly.
+An `.env.example` file is provided as a template. It contains the required configuration variables (e.g., paths) for the DAG to function properly.
 
 To use it:
 
 ```bash
-cp dags/utils/etl.cfg.template dags/utils/etl.cfg
+cp .env.example .env
 ```
-Then edit etl.cfg to match your local environment paths.
+Then edit .env to match your local environment paths.
 
 Access the Airflow UI at http://localhost:8080 and log in with credentials which were provided during the Airflow setup.
 
 Once logged in : 
-1. Enable the DAG named dag_etl.
+1. Enable the DAG named econvention_to_oscar.
 
 2. Click on the Trigger DAG button.
 
@@ -112,7 +112,7 @@ Make sure the requirements from the previous two sections are met before proceed
 You can copy and paste the following POST request by replacing the logical date:
 
 ```bash
-curl -X POST http://localhost:8080/api/v2/dags/dag_etl/dagRuns   
+curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns   
   -H "Content-Type: application/json"   
   -H "Authorization: Bearer <JWT access_token>
   -d '{
@@ -125,6 +125,13 @@ curl -X POST http://localhost:8080/api/v2/dags/dag_etl/dagRuns
       }
     ]}
   }'
+```
+
+If your POST request to trigger the ETL pipeline is queued, it may be because the DAG is currently paused.
+
+You can either enable the DAG via the Airflow Web UI or run this command in your terminal:
+```bash
+airflow dags unpause econvention_to_oscar
 ```
 
 ---
@@ -142,4 +149,4 @@ Make sure the following test data files are present in the tests/data directory:
 1. econvention_raw_data.json
 2. oscar_expected_data.json
 
-These files are used to simulate real eConvention input and expected OSCAR output.
+These files are used to simulate E-convention input and expected OSCAR output.

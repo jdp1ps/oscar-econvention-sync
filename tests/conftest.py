@@ -8,9 +8,7 @@ import pendulum
 from airflow.models import DagBag
 from airflow import settings, DAG
 from airflow.utils.db import resetdb
-from tests.utils.dag import TEST_DAG_ID, DATA_INTERVAL_START
-from tests.utils.dag import import_from_path
-
+from tests.utils.dag import TEST_DAG_ID, import_from_path, DATA_INTERVAL_START
 
 os.environ["APP_ENV"] = "TEST"
 
@@ -26,15 +24,6 @@ def unique_logical_date() -> pendulum.DateTime:
     :return: The unique execution date
     """
     return pendulum.now()
-
-
-@pytest.fixture()
-def dagbag():
-    """
-    Create a DagBag for testing dag loading
-    :return:
-    """
-    return DagBag()
 
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -84,23 +73,30 @@ def fixture_dagbag() -> DagBag:
     return DagBag(dag_folder=dag_folder)
 
 
-@pytest.fixture(name="dag")
+@pytest.fixture()
+def econvention_to_oscar_dag(dagbag) -> DAG:
+    """
+    Create a DAG for testing
+    :return: The DAG object
+    """
+    dag = dagbag.get_dag(dag_id="econvention_to_oscar")
+    return dag
+
+
+@pytest.fixture(name="dag_with_parameter")
 def dag_fixture(request: SubRequest) -> DAG:
     """
     Create a DAG for testing the convert_ldap_structure_description_task
     :param request: The pytest request object
     It is a dictionary with the following keys
     - task_name: The name of the task to be created
-    - param_names: The names of the parameters to be passed to the task
-    - other keys: The values of the parameters to be passed to the task
+    - param: The values of the parameters to be passed to the task
     :return: The DAG object
     """
     task_name = request.param["task_name"]
-    param_names = request.param["param_names"]
-    assert isinstance(param_names, list)
-    assert all(isinstance(name, str) for name in param_names)
-    args = [request.param[name] for name in param_names]
-
+    param = request.param["param"]
+    assert isinstance(param, list)
+    assert all(isinstance(item, dict) for item in param)
     # pylint: disable=unexpected-keyword-arg
     with DAG(
         dag_id=TEST_DAG_ID,
@@ -108,5 +104,5 @@ def dag_fixture(request: SubRequest) -> DAG:
         start_date=DATA_INTERVAL_START,
     ) as created_dag:
         task = import_from_path(task_name)
-        task(*args)
+        task(param)
     return created_dag
