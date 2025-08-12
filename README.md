@@ -97,7 +97,12 @@ Once logged in :
   "items": [
     {
       "Reference": "123",
-      "Titre": "Sample title"
+      "Titre": "Sample title",
+      "Porteur": "Je porte",
+      "Sticture Porteur": "Struct",
+      "Créateur": {
+        "DisplayName": "Admin"
+      }
     }
   ]
 }
@@ -116,12 +121,17 @@ curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns
   -H "Content-Type: application/json"   
   -H "Authorization: Bearer <JWT access_token>
   -d '{
-    "logical_date": "YYYY-MM-DDTHH:mm:ssZ",
+    "logical_date": "2025-08-01T00:00:00Z",
     "conf": {
       "items":[
       {
         "Reference": "123",
-        "Titre": "Sample title"
+        "Titre": "Sample title",
+        "Porteur": "Je porte",
+        "Sticture Porteur": "Struct",
+        "Créateur": {
+           "DisplayName": "Admin"
+          }
       }
     ]}
   }'
@@ -133,6 +143,9 @@ You can either enable the DAG via the Airflow Web UI or run this command in your
 ```bash
 airflow dags unpause econvention_to_oscar
 ```
+To avoid conflicts and ensure that each test is treated as a distinct execution, it's essential to use a unique logical_date for every attempt.
+
+Be sure to change this value for each new try.
 
 ---
 

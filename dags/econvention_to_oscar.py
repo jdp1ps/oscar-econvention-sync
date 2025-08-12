@@ -2,7 +2,7 @@ from datetime import datetime
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
 from tasks.extract import extract_from_econvention
-from tasks.transform_from_econvention_to_oscar import (
+from tasks.transform import (
     transform_from_econvention_to_oscar,
 )
 from tasks.load import load

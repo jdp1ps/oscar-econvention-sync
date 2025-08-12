@@ -3,6 +3,7 @@ import json
 import time
 import pytest
 from airflow.utils.state import TaskInstanceState
+from models.econvention_factory import EconventionFactory
 from tests.utils.dag import (
     assert_dag_dict_equal,
     DATA_INTERVAL_START,
@@ -11,10 +12,7 @@ from tests.utils.dag import (
     create_task_instance,
 )
 
-TRANSFORM_TASK_NAME = (
-    "dags.tasks.transform_from_econvention_to_oscar"
-    ".transform_from_econvention_to_oscar"
-)
+TRANSFORM_TASK_NAME = "dags.tasks.transform" + ".transform_from_econvention_to_oscar"
 
 
 def test_dag_loaded(econvention_to_oscar_dag):
@@ -66,27 +64,29 @@ def test_extract_from_econvention(
     [
         {
             "task_name": TRANSFORM_TASK_NAME,
-            "param": [
-                {
-                    "Titre": "test1",
-                    "Reference": "test1",
-                    "Porteur": "econvention",
-                    "Sticture Porteur": "Structure1",
-                    "Partenaire": [{"DisplayName": "Partenaire 1"}],
-                    "Créateur": {"DisplayName": "econvention"},
-                },
-                {
-                    "Titre": "test2",
-                    "Reference": "test2",
-                    "Porteur": "Amel Dabiba-Mahdbi",
-                    "Sticture Porteur": "Structure1",
-                    "Partenaire": [
-                        {"DisplayName": "Partenaire 1"},
-                        {"DisplayName": "Partenaire 2"},
-                    ],
-                    "Créateur": {"DisplayName": "econvention"},
-                },
-            ],
+            "param": EconventionFactory.from_api_payload(
+                [
+                    {
+                        "Titre": "test1",
+                        "Reference": "test1",
+                        "Porteur": "econvention",
+                        "Sticture Porteur": "Structure1",
+                        "Partenaire": [{"DisplayName": "Partenaire 1"}],
+                        "Créateur": {"DisplayName": "econvention"},
+                    },
+                    {
+                        "Titre": "test2",
+                        "Reference": "test2",
+                        "Porteur": "Amel Dabiba-Mahdbi",
+                        "Sticture Porteur": "Structure1",
+                        "Partenaire": [
+                            {"DisplayName": "Partenaire 1"},
+                            {"DisplayName": "Partenaire 2"},
+                        ],
+                        "Créateur": {"DisplayName": "econvention"},
+                    },
+                ]
+            ),
         }
     ],
     indirect=True,
@@ -127,7 +127,5 @@ def test_transform_econvention_to_oscar(
     )
     assert ti.state == TaskInstanceState.SUCCESS
     assert json.dumps(
-        ti.xcom_pull(task_ids="transform_from_econvention_to_oscar"),
-        sort_keys=True,
-        indent=2,
-    ) == json.dumps(oscar_expected_data, sort_keys=True, indent=2)
+        ti.xcom_pull(task_ids="transform_from_econvention_to_oscar"), sort_keys=True
+    ) == json.dumps(oscar_expected_data, sort_keys=True)

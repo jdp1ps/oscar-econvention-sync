@@ -1,12 +1,11 @@
 import os
-import json
 import re
 from airflow.decorators import task
 from utils.config import ECONVENTION_TO_OSCAR_OUTPUT_DIR
 
 
 @task
-def load(data: list[dict], **context) -> list[dict]:
+def load(data: str, **context) -> list[dict]:
     """
     Serializes the transformed data into a JSON file with a unique name based on logical date.
 
@@ -23,5 +22,5 @@ def load(data: list[dict], **context) -> list[dict]:
     load_output_path = os.path.join(ECONVENTION_TO_OSCAR_OUTPUT_DIR, output_filename)
 
     with open(load_output_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+        f.write(data)
     return load_output_path

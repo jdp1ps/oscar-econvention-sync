@@ -1,4 +1,5 @@
 from airflow.decorators import task
+from models.econvention_factory import EconventionFactory
 
 
 @task
@@ -19,5 +20,5 @@ def extract_from_econvention(**context) -> list[dict]:
         raise ValueError("Expected 'items' to be a list of dictionaries.")
     if not all(isinstance(item, dict) for item in items):
         raise ValueError("All items in 'items' must be dictionaries.")
-
-    return items
+    cleaned_items = EconventionFactory.from_api_payload(items)
+    return cleaned_items
