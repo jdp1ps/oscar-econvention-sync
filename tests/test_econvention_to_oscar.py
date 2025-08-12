@@ -11,6 +11,11 @@ from tests.utils.dag import (
     create_task_instance,
 )
 
+TRANSFORM_TASK_NAME = (
+    "dags.tasks.transform_from_econvention_to_oscar"
+    ".transform_from_econvention_to_oscar"
+)
+
 
 def test_dag_loaded(econvention_to_oscar_dag):
     """
@@ -56,17 +61,11 @@ def test_extract_from_econvention(
     assert ti.state == TaskInstanceState.SUCCESS
 
 
-TASK_NAME = (
-    "dags.tasks.transform_from_econvention_to_oscar"
-    ".transform_from_econvention_to_oscar"
-)
-
-
 @pytest.mark.parametrize(
     "dag_with_parameter",
     [
         {
-            "task_name": TASK_NAME,
+            "task_name": TRANSFORM_TASK_NAME,
             "param": [
                 {
                     "Titre": "test1",
