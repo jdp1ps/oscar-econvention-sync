@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import Field, ConfigDict
 from models.abstract_models import SyncConvention
 
@@ -14,11 +13,11 @@ class Econvention(SyncConvention):
     Titre: str
     Porteur: str
     Createur: str = Field(alias="Créateur")
-    Partenaire: Optional[list[str]] = None
+    Partenaire: list[str] =[]
     Structure_Porteur: str
-    Description: Optional[str] = ""
-    Origine_de_la_convention: Optional[str] = None
-    SousType: Optional[str] = None
-    DateDemarrage: Optional[str] = ""
-    TermeConvention: Optional[str] = ""
-    Etape: Optional[list[str]] = []
+    Description: str = ""
+    Origine_de_la_convention: str | None
+    SousType: str | None
+    DateDemarrage: str = ""
+    TermeConvention: str = ""
+    Etape: list[str] = []
