@@ -16,8 +16,8 @@ class Econvention(SyncConvention):
     Partenaire: list[str] =[]
     Structure_Porteur: str
     Description: str = ""
-    Origine_de_la_convention: str | None
-    SousType: str | None
+    Origine_de_la_convention: str = ""
+    SousType: str = ""
     DateDemarrage: str = ""
     TermeConvention: str = ""
     Etape: list[str] = []
