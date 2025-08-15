@@ -3,9 +3,8 @@ import json
 import pytest
 from airflow.utils.state import TaskInstanceState
 from models.econvention_factory import EconventionFactory
+from tests.conftest import OSCAR_EXPECTED_DATA
 from tests.utils.dag import (
-    DATA_INTERVAL_START,
-    DATA_INTERVAL_END,
     create_dag_run,
     create_task_instance,
 )
@@ -45,9 +44,7 @@ TRANSFORM_TASK_NAME = "dags.tasks.transform.transform_from_econvention_to_oscar"
     ],
     indirect=True,
 )
-def test_transform_econvention_to_oscar(
-    dag_with_parameter, oscar_expected_data, unique_logical_date
-):
+def test_transform_econvention_to_oscar(dag_with_parameter, unique_logical_date):
     """
     Test the `transform_econvention_to_oscar` function to ensure that it correctly
     converts raw eConvention data into the format expected by the OSCAR system.
@@ -65,15 +62,13 @@ def test_transform_econvention_to_oscar(
     date_iso = str(datetime.now().date().isoformat())
 
     # update dynamically any attributes that require ISO date
-    for item in oscar_expected_data:
+    for item in OSCAR_EXPECTED_DATA:
         if "acronym" in item:
             item["acronym"] = date_iso
         if "projectlabel" in item:
             item["projectlabel"] = date_iso
     dag_run = create_dag_run(
         dag=dag_with_parameter,
-        data_interval_start=DATA_INTERVAL_START,
-        data_interval_end=DATA_INTERVAL_END,
         logical_date=unique_logical_date,
     )
     ti = create_task_instance(
@@ -82,4 +77,4 @@ def test_transform_econvention_to_oscar(
     assert ti.state == TaskInstanceState.SUCCESS
     assert json.dumps(
         ti.xcom_pull(task_ids="transform_from_econvention_to_oscar"), sort_keys=True
-    ) == json.dumps(oscar_expected_data, sort_keys=True)
+    ) == json.dumps(OSCAR_EXPECTED_DATA, sort_keys=True)
