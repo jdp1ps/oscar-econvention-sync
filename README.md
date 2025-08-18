@@ -98,7 +98,7 @@ Once logged in :
     {
       "Reference": "123",
       "Titre": "Sample title",
-      "Porteur": "Je porte",
+      "Porteur": "Porteur",
       "Sticture Porteur": "Struct",
       "Créateur": {
         "DisplayName": "Admin"
@@ -127,7 +127,7 @@ curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns
       {
         "Reference": "123",
         "Titre": "Sample title",
-        "Porteur": "Je porte",
+        "Porteur": "Porteur",
         "Sticture Porteur": "Struct",
         "Créateur": {
            "DisplayName": "Admin"

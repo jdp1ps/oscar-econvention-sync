@@ -10,14 +10,14 @@ class OscarFactory(ConventionFactory):
     """
 
     @classmethod
-    def from_api_payload(cls, data: list[dict]) -> list[OscarConvention]:
+    def from_api_payload(cls, raw_data: list[dict]) -> list[OscarConvention]:
         """Create a convention instance from a raw API payload."""
 
     @classmethod
-    def convert_from(cls, data: list[dict]) -> str:
+    def convert_from(cls, clean_data: list[dict]) -> str:
         """Convert data from another convention model."""
-        econvention_list = [
-            Econvention(**dict(econvention.items())) for econvention in data
+        econvention_list: list[Econvention] = [
+            Econvention(**dict(econvention.items())) for econvention in clean_data
         ]
         oscar_list: list[OscarConvention] = []
         for econvention in econvention_list:
@@ -47,10 +47,10 @@ class OscarFactory(ConventionFactory):
                 "milestones": econvention.Etape or [],
             }
             oscar_list.append(OscarConvention(**mapping))
-        result = json.dumps(
+        results = json.dumps(
             [oscar_conv.model_dump(by_alias=True) for oscar_conv in oscar_list],
             sort_keys=True,
             indent=4,
         )
 
-        return result
+        return results

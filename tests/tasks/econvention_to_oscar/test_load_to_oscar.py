@@ -20,7 +20,7 @@ LOAD_TASK_NAME = "dags.tasks.load.load"
     ],
     indirect=True,
 )
-def test_extract_from_econvention(dag_with_parameter, unique_logical_date):
+def test_load_json_file(dag_with_parameter, unique_logical_date):
     """
     Test the `load` function to verify if the file is created correctly
     and loading of JSON data from this file to import in OSCAR via BashOperator.

@@ -8,15 +8,15 @@ class EconventionFactory(ConventionFactory):
     """
 
     @classmethod
-    def from_api_payload(cls, data: list[dict]) -> list[dict]:
+    def from_api_payload(cls, raw_data: list[dict]) -> list[dict]:
         """
         Create a convention instance from a raw API payload sent by eConvention.
         This raw API payload is cleaned before being instantiated.
-        :param data: raw API payload sent by eConvention.
+        :param raw_data: raw API payload sent by eConvention.
         :return: list of econvention instances formatted into JSON string.
         """
         econvention_list: list[Econvention] = []
-        for econvention in data:
+        for econvention in raw_data:
             # Extract list of partners by getting their DisplayName if partner exists as a list.
             if "Partenaire" in econvention and isinstance(
                 econvention["Partenaire"], list
@@ -34,9 +34,9 @@ class EconventionFactory(ConventionFactory):
                 k: v for k, v in econvention.items() if k in Econvention.model_fields
             }
             econvention_list.append(Econvention(**filtered_data))
-        result_list = [econvention.model_dump() for econvention in econvention_list]
-        return result_list
+        results = [econvention.model_dump() for econvention in econvention_list]
+        return results
 
     @classmethod
-    def convert_from(cls, data: list[dict]) -> str:
+    def convert_from(cls, clean_data: list[dict]) -> str:
         """Convert data from another convention model."""

@@ -23,6 +23,7 @@ with DAG(
     loaded_data = load(transformed_data)
 
     import_activity_oscar = BashOperator(
+        dag=econvention_to_oscar,
         task_id="load_to_oscar",
         bash_command=(
             f"php {OSCAR_HOME_PATH}/bin/oscar.php activity:import-json "

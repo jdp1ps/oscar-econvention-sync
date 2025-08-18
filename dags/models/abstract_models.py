@@ -15,10 +15,10 @@ class ConventionFactory(ABC):
 
     @classmethod
     @abstractmethod
-    def from_api_payload(cls, data: list[dict]) -> list[dict]:
+    def from_api_payload(cls, raw_data: list[dict]) -> list[dict]:
         """Create a convention instance from a raw API payload."""
 
     @classmethod
     @abstractmethod
-    def convert_from(cls, data: list[dict]) -> str:
+    def convert_from(cls, clean_data: list[dict]) -> str:
         """Convert data to serialize into a JSON formatted string."""
