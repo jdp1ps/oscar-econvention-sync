@@ -1,11 +1,11 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
-from tasks.extract import extract_from_econvention
-from tasks.transform import (
+from tasks.econvention_to_oscar.extract import extract_from_econvention
+from tasks.econvention_to_oscar.transform import (
     transform_from_econvention_to_oscar,
 )
-from tasks.load import load
+from tasks.econvention_to_oscar.load import load
 from utils.config import OSCAR_HOME_PATH
 
 

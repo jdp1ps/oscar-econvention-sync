@@ -1,8 +1,7 @@
-from pydantic import Field, ConfigDict
-from models.abstract_models import SyncConvention
+from pydantic import BaseModel, Field, ConfigDict
 
 
-class Econvention(SyncConvention):
+class Econvention(BaseModel):
     """
     Econvention model which represents an ECONVENTION.
     """

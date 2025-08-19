@@ -1,9 +1,8 @@
 from datetime import datetime
-from pydantic import Field, PositiveInt, field_validator
-from models.abstract_models import SyncConvention
+from pydantic import BaseModel, Field, PositiveInt, field_validator
 
 
-class OscarConvention(SyncConvention):
+class OscarConvention(BaseModel):
     """
     Activity representation in OSCAR, fields required to import in OSCAR
     """

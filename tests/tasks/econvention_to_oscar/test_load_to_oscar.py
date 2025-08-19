@@ -7,7 +7,7 @@ from tests.utils.dag import (
     create_task_instance,
 )
 
-LOAD_TASK_NAME = "dags.tasks.load.load"
+LOAD_TASK_NAME = "dags.tasks.econvention_to_oscar.load.load"
 
 
 @pytest.mark.parametrize(
