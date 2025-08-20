@@ -7,10 +7,11 @@ from utils.config import ECONVENTION_TO_OSCAR_OUTPUT_DIR
 @task
 def load(data: str, **context) -> list[dict]:
     """
-    Serializes the transformed data into a JSON file with a unique name based on logical date.
+    Create a JSON file with a unique name based on logical date
+    It contains serialized data given by transform process
 
     Args:
-        data: The final list of dictionaries to be loaded.
+        data: serialized data.
 
     Returns:
         Path to the generated JSON file.

@@ -1,11 +1,15 @@
 [
   {
     "uid": "test1",
-    "acronym": "",
-    "projectlabel": "",
+    "acronym": "sth",
+    "projectlabel": "something",
     "label": "test1",
+
     "financialImpact": "Aucune",
     "type": "",
+    "amount": null,
+    "currency": "Euro",
+    "datePFI": null,
     "pfi": "",
     "organizations": {
       "Structure Porteur": ["Structure1"],
@@ -15,19 +19,25 @@
       "Porteur": ["econvention"],
       "Créateur": ["econvention"]
     },
-    "dateend": "",
-    "datestart": "",
+    "dateend": null,
+    "datestart": null,
+    "datesigned": null,
     "description": "",
     "milestones": [],
-    "status": 200
+    "status": 404,
+    "tva": null,
+    "payments": []
   },
     {
     "uid": "test2",
-    "acronym": null,
-    "projectlabel": null,
+    "acronym": "sth",
+    "projectlabel": "something",
     "label": "test2",
     "financialImpact": "Aucune",
     "type": "",
+    "amount": null,
+    "currency": "Euro",
+    "datePFI": null,
     "pfi": "",
     "organizations": {
       "Structure Porteur": ["Structure1"],
@@ -37,10 +47,13 @@
       "Porteur": ["Amel Dabiba-Mahdbi"],
       "Créateur": ["econvention"]
     },
-    "dateend": "",
-    "datestart": "",
+    "dateend": null,
+    "datestart": null,
+    "datesigned":null,
     "description": "",
     "milestones": [],
-    "status": 200
-  }
+    "status": 404,
+    "tva": null,
+    "payments": []
+    }
 ]
