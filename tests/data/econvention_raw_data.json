@@ -1,0 +1,38 @@
+[
+  {
+    "Titre": "test1",
+    "Reference": "test1",
+    "Porteur": "econvention",
+    "Email Porteur": "econvention@univparis1fr.onmicrosoft.com",
+    "Sticture Porteur": "Structure1",
+    "Date de création": "2025-05-06T13:30:26Z",
+    "Partenaire": [
+      {
+		"DisplayName": "Partenaire 1"
+      }
+    ],
+    "Créateur": {
+      "DisplayName": "econvention"
+
+    }
+  },
+  {
+    "Titre": "test2",
+    "Reference": "test2",
+    "Porteur": "Amel Dabiba-Mahdbi",
+    "Email Porteur": "Amel.Dabiba-Mahdbi@univ-paris1.fr",
+    "Sticture Porteur": "Structure1",
+    "Date de création": "2025-05-20T14:30:38Z",
+    "Partenaire": [
+      {
+		"DisplayName": "Partenaire 1"
+      },
+      {
+		"DisplayName": "Partenaire 2"
+      }
+    ],
+    "Créateur": {
+      "DisplayName": "econvention"
+    }
+  }
+]
