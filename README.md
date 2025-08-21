@@ -159,7 +159,7 @@ APP_ENV=TEST pytest
 
 Make sure the following test data files are present in the tests/data directory:
 
-1. econvention_raw_data.json
-2. oscar_expected_data.json
+1. convention_raw_data.json
+2. activity_expected_data.json
 
 These files are used to simulate E-convention input and expected OSCAR output.

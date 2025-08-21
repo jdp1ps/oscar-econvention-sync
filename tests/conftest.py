@@ -18,11 +18,11 @@ if dags_path not in sys.path:
 
 DATA_DIR = Path(__file__).parent / "data"
 
-with open(DATA_DIR / "econvention_raw_data.json", encoding="utf-8") as f:
-    ECONVENTION_RAW_DATA = json.load(f)
+with open(DATA_DIR / "convention_raw_data.json", encoding="utf-8") as f:
+    CONVENTION_RAW_DATA = json.load(f)
 
-with open(DATA_DIR / "oscar_expected_data.json", encoding="utf-8") as f:
-    OSCAR_EXPECTED_DATA = json.load(f)
+with open(DATA_DIR / "activity_expected_data.json", encoding="utf-8") as f:
+    ACTIVITY_EXPECTED_DATA = json.load(f)
 
 
 @pytest.fixture(name="unique_logical_date")
@@ -32,9 +32,6 @@ def unique_logical_date() -> pendulum.DateTime:
     :return: The unique execution date
     """
     return pendulum.now()
-
-
-DATA_DIR = Path(__file__).parent / "data"
 
 
 @pytest.fixture(scope="function", autouse=True, name="initialize_airflow_db")

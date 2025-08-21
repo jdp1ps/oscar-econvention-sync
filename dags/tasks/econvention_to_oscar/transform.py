@@ -5,13 +5,13 @@ from models.convention_model import Convention
 
 
 @task
-def transform_from_econvention_to_oscar(econventions: list[dict]) -> str:
+def transform_from_econvention_to_oscar(conventions: list[dict]) -> str:
     """Transform from ECONVENTION to OSCAR by mapping their attribute."""
 
     econvention_list: list[Convention] = [
-        Convention(**econvention) for econvention in econventions
+        Convention(**econvention) for econvention in conventions
     ]
-    oscar_list: list[Activity] = []
+    activity_list: list[Activity] = []
     for econvention in econvention_list:
         mapping = {
             "uid": econvention.Reference,
@@ -30,9 +30,9 @@ def transform_from_econvention_to_oscar(econventions: list[dict]) -> str:
             "dateend": (econvention.TermeConvention),
             "milestones": econvention.Etape or [],
         }
-        oscar_list.append(Activity(**mapping))
+        activity_list.append(Activity(**mapping))
     results = json.dumps(
-        [oscar_conv.model_dump(by_alias=True) for oscar_conv in oscar_list],
+        [oscar_conv.model_dump(by_alias=True) for oscar_conv in activity_list],
         sort_keys=True,
         indent=4,
     )

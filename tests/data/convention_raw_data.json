@@ -32,6 +32,8 @@
     ],
     "Créateur": {
       "DisplayName": "econvention"
-    }
+    },
+    "Origine de la convention": {"id": 1,"Value": "Interne"},
+    "DateDemarrage": "2025-05-20T14:30:38Z"
   }
 ]

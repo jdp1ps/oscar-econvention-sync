@@ -1,7 +1,7 @@
 import json
 import pytest
 from airflow.utils.state import TaskInstanceState
-from tests.conftest import OSCAR_EXPECTED_DATA
+from tests.conftest import ACTIVITY_EXPECTED_DATA
 from tests.utils.dag import (
     create_dag_run,
     create_task_instance,
@@ -15,7 +15,7 @@ LOAD_TASK_NAME = "dags.tasks.econvention_to_oscar.load.load"
     [
         {
             "task_name": LOAD_TASK_NAME,
-            "param": json.dumps(OSCAR_EXPECTED_DATA),
+            "param": json.dumps(ACTIVITY_EXPECTED_DATA),
         }
     ],
     indirect=True,

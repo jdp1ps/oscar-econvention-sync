@@ -1,4 +1,5 @@
 from airflow.decorators import task
+from pydantic import ValidationError
 from models.convention_model import Convention
 
 
@@ -19,8 +20,14 @@ def extract_from_econvention(**context) -> list[dict]:
         raise ValueError("All items in 'items' must be dictionaries.")
 
     convention_list: list[Convention] = []
-    for convention in raw_conventions:
-        convention_list.append(Convention.model_validate(convention))
+    errors = []
+    for i, convention in enumerate(raw_conventions):
+        try:
+            convention_list.append(Convention.model_validate(convention))
+        except ValidationError as e:
+            errors.append({"index": i, "errors": e.errors()})
+    if errors:
+        raise ValueError(f"Some conventions failed validation: {errors}")
 
     results = [econvention.model_dump() for econvention in convention_list]
     return results

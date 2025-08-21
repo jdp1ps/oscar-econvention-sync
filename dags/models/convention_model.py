@@ -1,5 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field, ConfigDict, field_validator
+from models.iso_date import DATE_PATTERN, to_iso_date
 
 
 class OrigineEnum(str, Enum):
@@ -44,8 +45,8 @@ class Convention(BaseModel):
     Type_de_la_convention: TypeEnum | None = Field(
         default=None, alias="Type de la convention"
     )
-    DateDemarrage: str | None = Field(default=None, pattern=r"\d{4}-\d{2}-\d{2}")
-    TermeConvention: str | None = Field(default=None, pattern=r"\d{4}-\d{2}-\d{2}")
+    DateDemarrage: str | None = Field(default=None, pattern=DATE_PATTERN)
+    TermeConvention: str | None = Field(default=None, pattern=DATE_PATTERN)
     Etape: list[str] = []
 
     @field_validator("Origine_de_la_convention", mode="before")
@@ -80,3 +81,11 @@ class Convention(BaseModel):
                 for item in partners
             ]
         return partners or []
+
+    @field_validator("DateDemarrage", "TermeConvention", mode="before")
+    @classmethod
+    def check_date_format(cls, raw_date):
+        """
+        wrapper to call to_iso_date used by models
+        """
+        return to_iso_date(raw_date)

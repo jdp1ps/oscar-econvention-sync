@@ -1,6 +1,7 @@
 from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
+from models.iso_date import DATE_PATTERN, to_iso_date
 
 
 class FinancialImpactEnum(str, Enum):
@@ -51,10 +52,10 @@ class Activity(BaseModel):
     persons: dict = {}
     organizations: dict = {}
     description: str = ""
-    datestart: str | None = Field(default=None, pattern=r"\d{4}-\d{2}-\d{2}")
-    dateend: str | None = Field(default=None, pattern=r"\d{4}-\d{2}-\d{2}")
-    datesigned: str | None = Field(default=None, pattern=r"\d{4}-\d{2}-\d{2}")
-    datePFI: str | None = Field(default=None, pattern=r"\d{4}-\d{2}-\d{2}")
+    datestart: str | None = Field(default=None, pattern=DATE_PATTERN)
+    dateend: str | None = Field(default=None, pattern=DATE_PATTERN)
+    datesigned: str | None = Field(default=None, pattern=DATE_PATTERN)
+    datePFI: str | None = Field(default=None, pattern=DATE_PATTERN)
     pfi: str = ""
     type: str = ""
     amount: float | None = None
@@ -69,7 +70,7 @@ class Activity(BaseModel):
     @classmethod
     def check_dict_format(cls, v):
         """
-        Ensure that the fields persons and organizations formats as :
+        Ensure that fields persons and organizations formats as:
         "organizations"/"persons": {
             "Role A": ['name1', 'name2'],
             "Role B": ["name3"]
@@ -85,3 +86,11 @@ class Activity(BaseModel):
                     f"Invalid value type for role {role}: {type(entities).__name__}"
                 )
         return v
+
+    @field_validator("datestart", "dateend", "datesigned", mode="before")
+    @classmethod
+    def check_date_format(cls, raw_date):
+        """
+        wrapper to call to_iso_date used by models
+        """
+        return to_iso_date(raw_date)
