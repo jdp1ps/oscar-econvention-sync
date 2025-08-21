@@ -8,31 +8,31 @@ from models.convention_model import Convention
 def transform_from_econvention_to_oscar(conventions: list[dict]) -> str:
     """Transform from ECONVENTION to OSCAR by mapping their attribute."""
 
-    econvention_list: list[Convention] = [
+    convention_list: list[Convention] = [
         Convention(**econvention) for econvention in conventions
     ]
     activity_list: list[Activity] = []
-    for econvention in econvention_list:
+    for convention in convention_list:
         mapping = {
-            "uid": econvention.Reference,
-            "label": econvention.Titre,
+            "uid": convention.Reference,
+            "label": convention.Titre,
             "persons": {
-                "Porteur": econvention.Porteur,
-                "Créateur": econvention.Createur,
+                "Porteur": convention.Porteur,
+                "Créateur": convention.Createur,
             },
             "organizations": {
-                "Structure Porteur": econvention.Structure_Porteur,
-                "Partenaire": econvention.Partenaire,
+                "Structure Porteur": convention.Structure_Porteur,
+                "Partenaire": convention.Partenaire,
             },
-            "description": econvention.Description or "",
-            "type": econvention.Type_de_la_convention or "",
-            "datestart": (econvention.DateDemarrage),
-            "dateend": (econvention.TermeConvention),
-            "milestones": econvention.Etape or [],
+            "description": convention.Description or "",
+            "type": convention.Type_de_la_convention or "",
+            "datestart": convention.DateDemarrage,
+            "dateend": convention.TermeConvention,
+            "milestones": convention.Etape or [],
         }
         activity_list.append(Activity(**mapping))
     results = json.dumps(
-        [oscar_conv.model_dump(by_alias=True) for oscar_conv in activity_list],
+        [activity.model_dump(by_alias=True) for activity in activity_list],
         sort_keys=True,
         indent=4,
     )

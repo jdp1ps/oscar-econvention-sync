@@ -29,5 +29,5 @@ def extract_from_econvention(**context) -> list[dict]:
     if errors:
         raise ValueError(f"Some conventions failed validation: {errors}")
 
-    results = [econvention.model_dump() for econvention in convention_list]
+    results = [convention.model_dump() for convention in convention_list]
     return results
