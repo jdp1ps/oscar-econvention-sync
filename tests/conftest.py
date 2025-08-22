@@ -18,11 +18,18 @@ if dags_path not in sys.path:
 
 DATA_DIR = Path(__file__).parent / "data"
 
-with open(DATA_DIR / "convention_raw_data.json", encoding="utf-8") as f:
-    CONVENTION_RAW_DATA = json.load(f)
+@pytest.fixture(name="convention_raw_data")
+def convention_raw_data_fixture():
+    """load data from convention_raw_data.json"""
+    with open(DATA_DIR / "convention_raw_data.json", encoding="utf-8") as f:
+        return json.load(f)
 
-with open(DATA_DIR / "activity_expected_data.json", encoding="utf-8") as f:
-    ACTIVITY_EXPECTED_DATA = json.load(f)
+
+@pytest.fixture(name="activity_expected_data")
+def activity_expected_data_fixture():
+    """load data from activity_expected_data.json"""
+    with open(DATA_DIR / "activity_expected_data.json", encoding="utf-8") as f:
+        return json.load(f)
 
 
 @pytest.fixture(name="unique_logical_date")
