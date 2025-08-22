@@ -18,6 +18,7 @@ if dags_path not in sys.path:
 
 DATA_DIR = Path(__file__).parent / "data"
 
+
 @pytest.fixture(name="convention_raw_data")
 def convention_raw_data_fixture():
     """load data from convention_raw_data.json"""

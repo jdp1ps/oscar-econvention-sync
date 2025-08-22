@@ -3,7 +3,6 @@ from tests.utils.dag import (
 )
 
 
-
 def test_dag_loaded(econvention_to_oscar_dag):
     """
     Test dag loading
