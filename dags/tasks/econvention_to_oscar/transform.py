@@ -9,7 +9,7 @@ def transform_from_econvention_to_oscar(conventions: list[dict]) -> str:
     """Transform from ECONVENTION to OSCAR by mapping their attribute."""
 
     convention_list: list[Convention] = [
-        Convention(**econvention) for econvention in conventions
+        Convention.model_validate(econvention) for econvention in conventions
     ]
     activity_list: list[Activity] = []
     for convention in convention_list:
@@ -30,7 +30,7 @@ def transform_from_econvention_to_oscar(conventions: list[dict]) -> str:
             "dateend": convention.TermeConvention,
             "milestones": convention.Etape or [],
         }
-        activity_list.append(Activity(**mapping))
+        activity_list.append(Activity.model_validate(mapping))
     results = json.dumps(
         [activity.model_dump(by_alias=True) for activity in activity_list],
         sort_keys=True,

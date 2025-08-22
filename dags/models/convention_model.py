@@ -1,6 +1,6 @@
 from enum import Enum
-from pydantic import BaseModel, Field, ConfigDict, field_validator
-from models.iso_date import DATE_PATTERN, to_iso_date
+from pydantic import BaseModel, Field, ConfigDict, model_validator, field_validator
+from models.iso_date import DATE_PATTERN, to_iso_date, ensure_start_before_end
 
 
 class OrigineEnum(str, Enum):
@@ -48,6 +48,18 @@ class Convention(BaseModel):
     DateDemarrage: str | None = Field(default=None, pattern=DATE_PATTERN)
     TermeConvention: str | None = Field(default=None, pattern=DATE_PATTERN)
     Etape: list[str] = []
+
+    @model_validator(mode="after")
+    @classmethod
+    def check_dates_order(cls, values):
+        """Ensure DateDemarrage is before TermeConvention."""
+        ensure_start_before_end(
+            values.DateDemarrage,
+            values.TermeConvention,
+            start_name="DateDemarrage",
+            end_name="TermeConvention",
+        )
+        return values
 
     @field_validator("Origine_de_la_convention", mode="before")
     @classmethod
