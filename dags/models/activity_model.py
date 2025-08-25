@@ -154,3 +154,46 @@ class Activity(BaseModel):
                 raise ValueError(f"Milestone {i} is missing keys: {missing}")
             milestone["date"] = to_iso_date(milestone["date"])
         return milestones
+
+    def to_reference(self):
+        """Convert uid to convention's reference"""
+        return self.to_uid()
+
+    def to_titre(self):
+        """Convert label to convention's title"""
+        return self.label
+
+    def to_porteur(self):
+        """Convert part of persons to convention's porteur"""
+        return self.persons.get("Porteur")
+
+    def to_createur(self):
+        """Convert part of persons to convention's createur"""
+        return self.persons.get("Createur")
+
+    def to_structure(self):
+        """Convert a part of organizations to convention's structure"""
+        return self.organizations.get("Structure")
+
+    def to_partenaire(self):
+        """Convert a part of organizations to convention's partenaire"""
+        return self.organizations.get("Partenaire")
+
+    def to_convention_type(self):
+        """
+        Convert type to convention's type
+        [TEMPORARY IMPLEMENTATION] This method currently returns an empty string as a placeholder.
+        """
+        return ""
+
+    def to_date_demarrage(self):
+        """Convert datestart to convention's date_demarrage"""
+        return self.datestart
+
+    def to_terme_convention(self):
+        """Convert dateend to convention's terme_convention"""
+        return self.dateend
+
+    def to_etape(self):
+        """Convert milestones to convention's etape"""
+        return self.milestones

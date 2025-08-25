@@ -5,10 +5,12 @@ from utils.config import ECONVENTION_TO_OSCAR_OUTPUT_DIR
 
 
 @task
-def load(data: str, **context) -> list[dict]:
+def create_import_json_to_oscar(data: str, **context) -> list[dict]:
     """
-    Create a JSON file with a unique name based on logical date
+    Create a JSON file in ECONVENTION_TO_OSCAR_OUTPUT_DIR
+    with a unique name based on logical date
     It contains serialized data given by transform process
+    then this created file will be used to import in OSCAR
 
     Args:
         data: serialized data.

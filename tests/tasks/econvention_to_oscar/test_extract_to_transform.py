@@ -38,7 +38,7 @@ def test_extract_from_econvention(
         conf_data={"items": convention_raw_data},
     )
     ti = create_task_instance(
-        econvention_to_oscar_dag, dag_run, "extract_from_econvention"
+        econvention_to_oscar_dag, dag_run, "receive_from_econvention"
     )
     assert ti.state == TaskInstanceState.SUCCESS
 

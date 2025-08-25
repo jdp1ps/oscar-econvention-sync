@@ -7,18 +7,21 @@ from tests.utils.dag import (
     create_task_instance,
 )
 
-LOAD_TASK_NAME = "dags.tasks.econvention_to_oscar.load.load"
+CREATE_JSON_TO_OSCAR_TASK_NAME = (
+    "dags.tasks.econvention_to_oscar.create_import_json_to_oscar"
+    ".create_import_json_to_oscar"
+)
 
 
 @pytest.mark.parametrize(
     "dag_with_parameter",
     [
         {
-            "task_name": LOAD_TASK_NAME,
+            "task_name": CREATE_JSON_TO_OSCAR_TASK_NAME,
             "param": json.dumps(
                 [
                     {
-                        "uid": "test_load",
+                        "uid": "test_create_import_json",
                         "acronym": "sth",
                         "projectlabel": "something",
                         "label": "test1",
@@ -49,9 +52,9 @@ LOAD_TASK_NAME = "dags.tasks.econvention_to_oscar.load.load"
     ],
     indirect=True,
 )
-def test_load_json_file(dag_with_parameter, unique_logical_date):
+def test_import_json_file(dag_with_parameter, unique_logical_date):
     """
-    Test the `load` function verifies if the file is created correctly
+    Test the `import_json` function verifies if the file is created correctly
     in ECONVENTION_TO_OSCAR_OUTPUT_DIR.
     This created file can be imported later on in Oscar.
 
@@ -62,10 +65,12 @@ def test_load_json_file(dag_with_parameter, unique_logical_date):
         dag=dag_with_parameter,
         logical_date=unique_logical_date,
     )
-    ti = create_task_instance(dag_with_parameter, dag_run, "load")
+    ti = create_task_instance(
+        dag_with_parameter, dag_run, "create_import_json_to_oscar"
+    )
     assert ti.state == TaskInstanceState.SUCCESS
 
-    file_path = Path(ti.xcom_pull(task_ids="load"))
+    file_path = Path(ti.xcom_pull(task_ids="create_import_json_to_oscar"))
     assert file_path.exists()
 
     # Cleanup to avoid polluting ECONVENTION_TO_OSCAR_OUTPUT_DIR

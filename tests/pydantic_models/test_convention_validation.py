@@ -9,7 +9,7 @@ def test_createur_is_normalized(convention_raw_data):
     """Ensure it extracts Créateur properly from a dict"""
     valid_raw_data = convention_raw_data[1]
     valid_convention_model = Convention.model_validate(valid_raw_data)
-    assert valid_convention_model.Createur == "econvention"
+    assert valid_convention_model.createur == "econvention"
 
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["Créateur"] = IMPOSTOR_VALUE
@@ -21,11 +21,11 @@ def test_origine_is_normalized(convention_raw_data):
     """Ensure it extracts Origine de la convention properly from a dict"""
     valid_raw_data = convention_raw_data[1]
     valid_convention_model = Convention.model_validate(valid_raw_data)
-    assert valid_convention_model.Origine_de_la_convention == OrigineEnum.INTERNE
+    assert valid_convention_model.origine_de_la_convention == OrigineEnum.INTERNE
 
     valid_raw_data["Origine de la convention"] = "Partenaire"
     valid_convention_model = Convention.model_validate(valid_raw_data)
-    assert valid_convention_model.Origine_de_la_convention == OrigineEnum.PARTENAIRE
+    assert valid_convention_model.origine_de_la_convention == OrigineEnum.PARTENAIRE
 
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["Origine de la convention"] = str(IMPOSTOR_VALUE)
@@ -37,15 +37,15 @@ def test_partenaire_is_normalized(convention_raw_data):
     """Ensure it extracts Partenaire properly from a list[dict]"""
     valid_raw_data = convention_raw_data[1]
     valid_convention_model = Convention.model_validate(valid_raw_data)
-    assert valid_convention_model.Partenaire == ["Partenaire 1", "Partenaire 2"]
+    assert valid_convention_model.partenaire == ["Partenaire 1", "Partenaire 2"]
 
     valid_raw_data["Partenaire"] = []
     valid_convention_bis = Convention.model_validate(valid_raw_data)
-    assert valid_convention_bis.Partenaire == []
+    assert valid_convention_bis.partenaire == []
 
     valid_raw_data["Partenaire"] = None
     valid_convention_bis = Convention.model_validate(valid_raw_data)
-    assert valid_convention_bis.Partenaire == []
+    assert valid_convention_bis.partenaire == []
 
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["Partenaire"] = IMPOSTOR_VALUE
@@ -60,15 +60,15 @@ def test_date_is_iso_format(convention_raw_data, unique_logical_date):
     """
     valid_raw_data = convention_raw_data[1]
     valid_convention_model = Convention.model_validate(valid_raw_data)
-    assert valid_convention_model.DateDemarrage == "2025-05-20"
+    assert valid_convention_model.date_demarrage == "2025-05-20"
 
     valid_raw_data["DateDemarrage"] = "20/05/2025"
     valid_convention_bis = Convention.model_validate(valid_raw_data)
-    assert valid_convention_bis.DateDemarrage == "2025-05-20"
+    assert valid_convention_bis.date_demarrage == "2025-05-20"
 
     valid_raw_data["DateDemarrage"] = str(unique_logical_date)
     valid_convention_bis = Convention.model_validate(valid_raw_data)
-    assert valid_convention_bis.DateDemarrage == str(
+    assert valid_convention_bis.date_demarrage == str(
         unique_logical_date.date().isoformat()
     )
 
