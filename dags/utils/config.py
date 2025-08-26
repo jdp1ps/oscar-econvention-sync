@@ -31,3 +31,4 @@ def get_env_var(key: str) -> str:
 
 ECONVENTION_TO_OSCAR_OUTPUT_DIR = get_env_var("ECONVENTION_TO_OSCAR_OUTPUT_DIR")
 OSCAR_HOME_PATH = get_env_var("OSCAR_HOME")
+FALLBACK_OUTPUT_DIR = get_env_var("FALLBACK_OUTPUT_DIR")

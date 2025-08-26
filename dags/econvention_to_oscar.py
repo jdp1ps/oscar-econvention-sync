@@ -2,8 +2,8 @@ from datetime import datetime
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
 from tasks.econvention_to_oscar.receive_from_econvention import receive_from_econvention
-from tasks.econvention_to_oscar.transform_from_econvention_to_oscar import (
-    transform_from_econvention_to_oscar,
+from tasks.econvention_to_oscar.transform_econvention_to_oscar import (
+    transform_econvention_to_oscar,
 )
 from tasks.econvention_to_oscar.create_import_json_to_oscar import (
     create_import_json_to_oscar,
@@ -21,7 +21,7 @@ with DAG(
 ) as econvention_to_oscar:
 
     raw_data = receive_from_econvention()
-    transformed_data = transform_from_econvention_to_oscar(raw_data)
+    transformed_data = transform_econvention_to_oscar(raw_data)
     loaded_data = create_import_json_to_oscar(transformed_data)
 
     import_activity_oscar = BashOperator(

@@ -74,5 +74,4 @@ def test_import_json_file(dag_with_parameter, unique_logical_date):
     assert file_path.exists()
 
     # Cleanup to avoid polluting ECONVENTION_TO_OSCAR_OUTPUT_DIR
-    if file_path.exists():
-        file_path.unlink()
+    file_path.unlink()

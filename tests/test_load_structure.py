@@ -16,8 +16,8 @@ def test_dag_structure(econvention_to_oscar_dag):
     Test that the DAG has the correct structure
     """
     expected_structure = {
-        "receive_from_econvention": ["transform_from_econvention_to_oscar"],
-        "transform_from_econvention_to_oscar": ["create_import_json_to_oscar"],
+        "receive_from_econvention": ["transform_econvention_to_oscar"],
+        "transform_econvention_to_oscar": ["create_import_json_to_oscar"],
         "create_import_json_to_oscar": ["load_to_oscar"],
         "load_to_oscar": [],  # END
     }
