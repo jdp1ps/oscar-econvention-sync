@@ -154,5 +154,5 @@ def test_import_json_file_with_fallback(
     assert file_path.exists()
     assert str(file_path).startswith(str(FALLBACK_OUTPUT_DIR))
 
-    # Cleanup to avoid polluting ECONVENTION_TO_OSCAR_OUTPUT_DIR
+    # Cleanup to avoid polluting FALLBACK_OUTPUT_DIR
     file_path.unlink()
