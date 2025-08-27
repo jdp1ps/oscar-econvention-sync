@@ -29,6 +29,15 @@ In that case, you can install the required package with:
 python3 -m pip install asyncpg
 ```
 
+Also, you may encounter an error with psycopg2.
+In that case, you can install the required package with:
+
+```bash
+sudo apt install libpq-dev python3.x-dev
+```
+Note: Don't forget to replace x with your current Python version (e.g., python3.11-dev for Python 3.11).
+
+
 Run Airflow in standalone mode:
 
 ```bash
