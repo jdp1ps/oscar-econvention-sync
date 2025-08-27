@@ -1,0 +1,65 @@
+[
+  {
+    "uid": "test1",
+    "acronym": "sth",
+    "projectlabel": "something",
+    "label": "test1",
+
+    "financialImpact": "Aucune",
+    "type": "",
+    "amount": null,
+    "currency": "Euro",
+    "datePFI": null,
+    "pfi": "",
+    "organizations": {
+      "Structure Porteur": ["Structure1"],
+      "Partenaire": ["Partenaire 1"]
+    },
+    "persons": {
+      "Porteur": ["econvention"],
+      "Créateur": ["econvention"]
+    },
+    "dateend": null,
+    "datestart": null,
+    "datesigned": null,
+    "description": "",
+    "milestones": [],
+    "status": 404,
+    "tva": null,
+    "payments": []
+  },
+    {
+    "uid": "test2",
+    "acronym": "sth",
+    "projectlabel": "something",
+    "label": "test2",
+    "financialImpact": "Aucune",
+    "type": "",
+    "amount": null,
+    "currency": "Euro",
+    "datePFI": null,
+    "pfi": "",
+    "organizations": {
+      "Structure Porteur": ["Structure1"],
+      "Partenaire": ["Partenaire 1","Partenaire 2"]
+    },
+    "persons": {
+      "Porteur": ["Amel Dabiba-Mahdbi"],
+      "Créateur": ["econvention"]
+    },
+    "dateend": null,
+    "datestart": "2025-05-20",
+    "datesigned":null,
+    "description": "",
+    "milestones": [
+      {
+        "type": "Brouillon",
+        "date": null,
+        "description": ""
+      }
+    ],
+    "status": 404,
+    "tva": null,
+    "payments": []
+    }
+]

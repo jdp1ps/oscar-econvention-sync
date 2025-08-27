@@ -16,6 +16,22 @@ dags_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dags"
 if dags_path not in sys.path:
     sys.path.insert(0, dags_path)
 
+DATA_DIR = Path(__file__).parent / "data"
+
+
+@pytest.fixture(name="convention_raw_data")
+def convention_raw_data_fixture():
+    """load data from convention_raw_data.json"""
+    with open(DATA_DIR / "convention_raw_data.json", encoding="utf-8") as f:
+        return json.load(f)
+
+
+@pytest.fixture(name="activity_expected_data")
+def activity_expected_data_fixture():
+    """load data from activity_expected_data.json"""
+    with open(DATA_DIR / "activity_expected_data.json", encoding="utf-8") as f:
+        return json.load(f)
+
 
 @pytest.fixture(name="unique_logical_date")
 def unique_logical_date() -> pendulum.DateTime:
@@ -24,29 +40,6 @@ def unique_logical_date() -> pendulum.DateTime:
     :return: The unique execution date
     """
     return pendulum.now()
-
-
-DATA_DIR = Path(__file__).parent / "data"
-
-
-@pytest.fixture
-def econvention_raw_data():
-    """
-    Load the raw ECONVENTION data.
-    :return:
-    """
-    with open(DATA_DIR / "econvention_raw_data.json", encoding="utf-8") as f:
-        return json.load(f)
-
-
-@pytest.fixture
-def oscar_expected_data():
-    """
-    Load the expected OSCAR data.
-    :return:
-    """
-    with open(DATA_DIR / "oscar_expected_data.json", encoding="utf-8") as f:
-        return json.load(f)
 
 
 @pytest.fixture(scope="function", autouse=True, name="initialize_airflow_db")
@@ -95,8 +88,6 @@ def dag_fixture(request: SubRequest) -> DAG:
     """
     task_name = request.param["task_name"]
     param = request.param["param"]
-    assert isinstance(param, list)
-    assert all(isinstance(item, dict) for item in param)
     # pylint: disable=unexpected-keyword-arg
     with DAG(
         dag_id=TEST_DAG_ID,

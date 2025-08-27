@@ -29,6 +29,15 @@ In that case, you can install the required package with:
 python3 -m pip install asyncpg
 ```
 
+Also, you may encounter an error with psycopg2.
+In that case, you can install the required package with:
+
+```bash
+sudo apt install libpq-dev python3.x-dev
+```
+Note: Don't forget to replace x with your current Python version (e.g., python3.11-dev for Python 3.11).
+
+
 Run Airflow in standalone mode:
 
 ```bash
@@ -97,7 +106,12 @@ Once logged in :
   "items": [
     {
       "Reference": "123",
-      "Titre": "Sample title"
+      "Titre": "Sample title",
+      "Porteur": "Porteur",
+      "Sticture Porteur": "Struct",
+      "Créateur": {
+        "DisplayName": "Admin"
+      }
     }
   ]
 }
@@ -116,12 +130,17 @@ curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns
   -H "Content-Type: application/json"   
   -H "Authorization: Bearer <JWT access_token>
   -d '{
-    "logical_date": "YYYY-MM-DDTHH:mm:ssZ",
+    "logical_date": "2025-08-01T00:00:00Z",
     "conf": {
       "items":[
       {
         "Reference": "123",
-        "Titre": "Sample title"
+        "Titre": "Sample title",
+        "Porteur": "Porteur",
+        "Sticture Porteur": "Struct",
+        "Créateur": {
+           "DisplayName": "Admin"
+          }
       }
     ]}
   }'
@@ -133,6 +152,9 @@ You can either enable the DAG via the Airflow Web UI or run this command in your
 ```bash
 airflow dags unpause econvention_to_oscar
 ```
+To avoid conflicts and ensure that each test is treated as a distinct execution, it's essential to use a unique logical_date for every attempt.
+
+Be sure to change this value for each new try.
 
 ---
 
@@ -146,7 +168,7 @@ APP_ENV=TEST pytest
 
 Make sure the following test data files are present in the tests/data directory:
 
-1. econvention_raw_data.json
-2. oscar_expected_data.json
+1. convention_raw_data.json
+2. activity_expected_data.json
 
 These files are used to simulate E-convention input and expected OSCAR output.

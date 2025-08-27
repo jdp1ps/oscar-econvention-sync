@@ -1,11 +1,13 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
-from tasks.extract import extract_from_econvention
-from tasks.transform_from_econvention_to_oscar import (
-    transform_from_econvention_to_oscar,
+from tasks.econvention_to_oscar.receive_from_econvention import receive_from_econvention
+from tasks.econvention_to_oscar.transform_econvention_to_oscar import (
+    transform_econvention_to_oscar,
 )
-from tasks.load import load
+from tasks.econvention_to_oscar.create_import_json_to_oscar import (
+    create_import_json_to_oscar,
+)
 from utils.config import OSCAR_HOME_PATH
 
 
@@ -18,15 +20,16 @@ with DAG(
     tags=["api", "json", "etl", "post"],
 ) as econvention_to_oscar:
 
-    raw_data = extract_from_econvention()
-    transformed_data = transform_from_econvention_to_oscar(raw_data)
-    loaded_data = load(transformed_data)
+    raw_data = receive_from_econvention()
+    transformed_data = transform_econvention_to_oscar(raw_data)
+    loaded_data = create_import_json_to_oscar(transformed_data)
 
     import_activity_oscar = BashOperator(
+        dag=econvention_to_oscar,
         task_id="load_to_oscar",
         bash_command=(
             f"php {OSCAR_HOME_PATH}/bin/oscar.php activity:import-json "
-            "-f {{ ti.xcom_pull(task_ids='load') }}"
+            "-f {{ ti.xcom_pull(task_ids='create_import_json_to_oscar') }}"
         ),
     )
     # pylint: disable=pointless-statement

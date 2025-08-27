@@ -27,9 +27,9 @@ def assert_dag_dict_equal(structure: dict, dag: DAG) -> None:
 
 def create_dag_run(
     dag: DAG,
-    data_interval_start: datetime,
-    data_interval_end: datetime,
     logical_date: datetime,
+    data_interval_start: datetime = DATA_INTERVAL_START,
+    data_interval_end: datetime = DATA_INTERVAL_END,
     conf_data: dict = None,
 ) -> DagRun:
     """
