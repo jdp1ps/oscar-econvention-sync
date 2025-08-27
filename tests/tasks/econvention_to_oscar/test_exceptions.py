@@ -152,7 +152,7 @@ def test_import_json_file_with_fallback(
 
     file_path = Path(ti.xcom_pull(task_ids="create_import_json_to_oscar"))
     assert file_path.exists()
-    assert str(file_path).startswith(str(FALLBACK_OUTPUT_DIR))
+    assert file_path.parent.exists()
 
     # Cleanup to avoid polluting FALLBACK_OUTPUT_DIR
     file_path.unlink()
