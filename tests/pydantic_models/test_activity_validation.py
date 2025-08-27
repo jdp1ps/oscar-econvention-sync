@@ -102,8 +102,10 @@ def test_amount_is_normalized(activity_expected_data):
 def test_milestones_is_normalized(activity_expected_data):
     """Ensure it extracts milestones properly from list[dict]"""
     valid_raw_data = activity_expected_data[1]
-    valid_convention_model = Activity.model_validate(valid_raw_data)
-    assert valid_convention_model.milestones == []
+    valid_activity_model = Activity.model_validate(valid_raw_data)
+    assert [
+        model.model_dump(mode="json") for model in valid_activity_model.milestones
+    ] == [{"type": "Brouillon", "date": None, "description": ""}]
 
     valid_raw_data["milestones"] = [
         {
@@ -113,7 +115,9 @@ def test_milestones_is_normalized(activity_expected_data):
         }
     ]
     valid_activity_model = Activity.model_validate(valid_raw_data)
-    assert valid_activity_model.milestones == [
+    assert [
+        model.model_dump(mode="json") for model in valid_activity_model.milestones
+    ] == [
         {
             "type": "Rapport scientifique",
             "date": "2017-01-07",
@@ -142,9 +146,9 @@ def test_payment_is_normalized(activity_expected_data):
         {"amount": 20000, "date": "2017-01-07", "predicted": "2017-01-01"}
     ]
     valid_convention_bis = Activity.model_validate(valid_raw_data)
-    assert valid_convention_bis.payments == [
-        {"amount": 20000, "date": "2017-01-07", "predicted": "2017-01-01"}
-    ]
+    assert [
+        payment.model_dump(mode="json") for payment in valid_convention_bis.payments
+    ] == [{"amount": 20000, "date": "2017-01-07", "predicted": "2017-01-01"}]
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["payments"] = [
         {"amount": 20000, "date": str(IMPOSTOR_VALUE), "predicted": "2017-01-01"}

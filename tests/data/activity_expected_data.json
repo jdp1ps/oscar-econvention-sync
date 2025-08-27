@@ -51,7 +51,13 @@
     "datestart": "2025-05-20",
     "datesigned":null,
     "description": "",
-    "milestones": [],
+    "milestones": [
+      {
+        "type": "Brouillon",
+        "date": null,
+        "description": ""
+      }
+    ],
     "status": 404,
     "tva": null,
     "payments": []

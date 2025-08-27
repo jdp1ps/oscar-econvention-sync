@@ -1,6 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel, Field, ConfigDict, model_validator, field_validator
-from models.iso_date import DATE_PATTERN, to_iso_date, ensure_start_before_end
+from utils.iso_date import DATE_PATTERN, to_iso_date, ensure_start_before_end
+from models.activity_model import Milestone
 
 
 class OrigineEnum(str, Enum):
@@ -51,7 +52,7 @@ class Convention(BaseModel):
     terme_convention: str | None = Field(
         default=None, alias="TermeConvention", pattern=DATE_PATTERN
     )
-    etape: list[str] = Field(default=[], alias="Etape")
+    etape: list[dict] = Field(default=[], alias="Etape")
 
     @model_validator(mode="after")
     @classmethod
@@ -124,6 +125,7 @@ class Convention(BaseModel):
             "Structure Porteur": self.structure_porteur,
             "Partenaire": self.partenaire,
         }
+
     def to_activity_type(self):
         """
         Converts type to activity's type.
@@ -141,4 +143,6 @@ class Convention(BaseModel):
 
     def to_milestones(self):
         """Convert Etape to activity's milestones"""
-        return self.etape
+        return [
+            Milestone(type=item["Title"]) for item in self.etape if item.get("Active")
+        ]
