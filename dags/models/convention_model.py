@@ -1,6 +1,11 @@
 from enum import Enum
 from pydantic import BaseModel, Field, ConfigDict, model_validator, field_validator
-from utils.iso_date import DATE_PATTERN, to_iso_date, ensure_start_before_end
+from utils.date_utils import (
+    CONVENTION_DATE_PATTERN,
+    to_iso_date,
+    ensure_start_before_end,
+    to_convention_date_format,
+)
 from models.activity_model import Milestone
 
 
@@ -47,10 +52,10 @@ class Convention(BaseModel):
         default=None, alias="Type de la convention"
     )
     date_demarrage: str | None = Field(
-        default=None, alias="DateDemarrage", pattern=DATE_PATTERN
+        default=None, alias="DateDemarrage", pattern=CONVENTION_DATE_PATTERN
     )
     terme_convention: str | None = Field(
-        default=None, alias="TermeConvention", pattern=DATE_PATTERN
+        default=None, alias="TermeConvention", pattern=CONVENTION_DATE_PATTERN
     )
     etape: list[dict] = Field(default=[], alias="Etape")
 
@@ -103,9 +108,9 @@ class Convention(BaseModel):
     @classmethod
     def check_date_format(cls, raw_date):
         """
-        wrapper to call to_iso_date used by models
+        wrapper to call to_convention_date_format used by models
         """
-        return to_iso_date(raw_date)
+        return to_convention_date_format(raw_date)
 
     def to_uid(self):
         """Convert reference to activity's uid"""
@@ -135,11 +140,11 @@ class Convention(BaseModel):
 
     def to_datestart(self):
         """Convert DateDemarrage to activity's datestart"""
-        return self.date_demarrage
+        return to_iso_date(self.date_demarrage)
 
     def to_dateend(self):
         """Convert TermeConvention to activity's dateend"""
-        return self.terme_convention
+        return to_iso_date(self.terme_convention)
 
     def to_milestones(self):
         """Convert Etape to activity's milestones"""

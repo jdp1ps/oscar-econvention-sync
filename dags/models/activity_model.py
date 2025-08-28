@@ -1,7 +1,12 @@
 from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel, Field, model_validator, field_validator, PositiveFloat
-from utils.iso_date import DATE_PATTERN, to_iso_date, ensure_start_before_end
+from utils.date_utils import (
+    ACTIVITY_DATE_PATTERN,
+    to_iso_date,
+    to_convention_date_format,
+    ensure_start_before_end,
+)
 
 
 class FinancialImpactEnum(str, Enum):
@@ -46,8 +51,8 @@ class Payment(BaseModel):
     """
 
     amount: PositiveFloat
-    date: str | None = Field(default=None, pattern=DATE_PATTERN)
-    predicted: str | None = Field(default=None, pattern=DATE_PATTERN)
+    date: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
+    predicted: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
 
 
 class Milestone(BaseModel):
@@ -56,7 +61,7 @@ class Milestone(BaseModel):
     """
 
     type: str
-    date: str | None = Field(default=None, pattern=DATE_PATTERN)
+    date: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     description: str = ""
 
 
@@ -72,10 +77,10 @@ class Activity(BaseModel):
     persons: dict = {}
     organizations: dict = {}
     description: str = ""
-    datestart: str | None = Field(default=None, pattern=DATE_PATTERN)
-    dateend: str | None = Field(default=None, pattern=DATE_PATTERN)
-    datesigned: str | None = Field(default=None, pattern=DATE_PATTERN)
-    datePFI: str | None = Field(default=None, pattern=DATE_PATTERN)
+    datestart: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
+    dateend: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
+    datesigned: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
+    datePFI: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     pfi: str = ""
     type: str = ""
     amount: PositiveFloat | None = None
@@ -158,11 +163,11 @@ class Activity(BaseModel):
 
     def to_date_demarrage(self):
         """Convert datestart to convention's date_demarrage"""
-        return self.datestart
+        return to_convention_date_format(self.datestart)
 
     def to_terme_convention(self):
         """Convert dateend to convention's terme_convention"""
-        return self.dateend
+        return to_convention_date_format(self.dateend)
 
     def to_etape(self):
         """Convert milestones to convention's etape"""

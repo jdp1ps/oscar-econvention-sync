@@ -1,6 +1,7 @@
 import pytest
 from pydantic import ValidationError
 from dags.models.convention_model import Convention, OrigineEnum
+from utils.date_utils import to_convention_date_format
 
 IMPOSTOR_VALUE = 18062018
 
@@ -55,21 +56,21 @@ def test_partenaire_is_normalized(convention_raw_data):
 
 def test_date_is_iso_format(convention_raw_data, unique_logical_date):
     """
-    Ensure that date fields has format YYYY-MM-DD.
+    Ensure that date fields has format YYYY/MM/DD hh:mm.
     then ensure an exception is raised when a date is invalid
     """
     valid_raw_data = convention_raw_data[1]
     valid_convention_model = Convention.model_validate(valid_raw_data)
-    assert valid_convention_model.date_demarrage == "2025-05-20"
+    assert valid_convention_model.date_demarrage == "2025/05/20 14:30"
 
-    valid_raw_data["DateDemarrage"] = "20/05/2025"
+    valid_raw_data["DateDemarrage"] = "2025/05/20 00:00"
     valid_convention_bis = Convention.model_validate(valid_raw_data)
-    assert valid_convention_bis.date_demarrage == "2025-05-20"
+    assert valid_convention_bis.date_demarrage == "2025/05/20 00:00"
 
     valid_raw_data["DateDemarrage"] = str(unique_logical_date)
     valid_convention_bis = Convention.model_validate(valid_raw_data)
-    assert valid_convention_bis.date_demarrage == str(
-        unique_logical_date.date().isoformat()
+    assert valid_convention_bis.date_demarrage == to_convention_date_format(
+        str(unique_logical_date)
     )
 
     invalid_raw_data = valid_raw_data.copy()
@@ -77,7 +78,7 @@ def test_date_is_iso_format(convention_raw_data, unique_logical_date):
     with pytest.raises(ValidationError):
         Convention.model_validate(invalid_raw_data)
 
-    invalid_raw_data["DateDemarrage"] = "2025-05-20"
-    invalid_raw_data["TermeConvention"] = "2000-01-01"
+    invalid_raw_data["DateDemarrage"] = "2025/05/20 00:00"
+    invalid_raw_data["TermeConvention"] = "2000/01/01 00:00"
     with pytest.raises(ValidationError):
         Convention.model_validate(invalid_raw_data)
