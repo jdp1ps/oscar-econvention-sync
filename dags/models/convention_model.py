@@ -19,17 +19,21 @@ from utils.date_utils import (
 )
 from models.activity_model import Milestone
 
+REFERENCE_ALIAS = "Reference"
 TITRE_ALIAS = "Title"
 PORTEUR_ALIAS = "Porteur"
 STRUCTURE_PORTEUR_ALIAS = "StructurePorteur"
 RESPONSABLE_PORTEUR_ALIAS = "ResponsablePorteur"
 REFERENT_DAJI_ALIAS = "ReferentDAJI"
 PARTENAIRE_ALIAS = "Partenaire"
+DESCRIPTION_ALIAS = "DescriptionConvention"
 ORIGINE_CONVENTION_ALIAS = "OrigineConvention"
+MONTANT_CONVENTION_ALIAS = "MontantConvention"
 TYPE_CONVENTION_ALIAS = "TypeConvention"
 SOUS_TYPE_CONVENTION_ALIAS = "SousType"
 DATE_DEMARRAGE_ALIAS = "DateDemarrage"
 TERME_CONVENTION_ALIAS = "TermeConvention"
+ETAPE_ALIAS = "Etape"
 
 
 class OrigineEnum(str, Enum):
@@ -50,7 +54,7 @@ class Convention(BaseModel):
         validate_by_name=True, validate_by_alias=True, frozen=True
     )
 
-    reference: str = Field(alias="Reference")
+    reference: str = Field(alias=REFERENCE_ALIAS)
     titre: str = Field(alias=TITRE_ALIAS)
     porteur: str = Field(alias=PORTEUR_ALIAS)
     structure_porteur: str = Field(alias=STRUCTURE_PORTEUR_ALIAS)
@@ -59,12 +63,12 @@ class Convention(BaseModel):
 
     partenaire: str = Field(default="", alias=PARTENAIRE_ALIAS)
 
-    description: str = Field(default="", alias="DescriptionConvention")
+    description: str = Field(default="", alias=DESCRIPTION_ALIAS)
     origine_de_la_convention: OrigineEnum | None = Field(
         default=None, alias=ORIGINE_CONVENTION_ALIAS
     )
     montant_convention: PositiveFloat | str = Field(
-        default="", alias="MontantConvention"
+        default="", alias=MONTANT_CONVENTION_ALIAS
     )
     type_convention: CONVENTION_TYPE_ENUM | None = Field(
         default=None, alias=TYPE_CONVENTION_ALIAS
@@ -78,7 +82,7 @@ class Convention(BaseModel):
     terme_convention: str | None = Field(
         default=None, alias=TERME_CONVENTION_ALIAS, pattern=CONVENTION_DATE_PATTERN
     )
-    etape: str = Field(default="", alias="Etape")
+    etape: str = Field(default="", alias=ETAPE_ALIAS)
 
     @model_validator(mode="after")
     @classmethod

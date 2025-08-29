@@ -9,6 +9,7 @@ from dags.models.convention_model import (
     TYPE_CONVENTION_ALIAS,
     SOUS_TYPE_CONVENTION_ALIAS,
 )
+
 # pylint: disable=wrong-import-order
 from utils.date_utils import to_convention_date_format
 from utils.type_utils import CONVENTION_TYPE_ENUM, CONVENTION_SOUS_TYPE_ENUM
@@ -16,14 +17,26 @@ from utils.type_utils import CONVENTION_TYPE_ENUM, CONVENTION_SOUS_TYPE_ENUM
 IMPOSTOR_VALUE = 18062018
 
 
-def test_responsable_porteur_is_normalized(convention_raw_data):
-    """Ensure it extracts Créateur properly from a dict"""
+def test_simple_attributes_are_normalized(convention_raw_data):
+    """
+    Ensure it extracts simple attributes as:
+    responsable_porteur/title/porteur/description
+    then
+    """
     valid_raw_data = convention_raw_data[0]
     valid_convention_model = Convention.model_validate(valid_raw_data)
     assert (
         valid_convention_model.responsable_porteur == "Personnels:Roles:DIR UFR UFR 27"
     )
-
+    assert valid_convention_model.titre == "Convention MIAGE - Association PIVOD"
+    assert valid_convention_model.porteur == "Carine Souveyet Jarosz"
+    assert (
+        valid_convention_model.description
+        == "Convention de partenariat entre la formation MIAGE et l'association PIVOD pour "
+        "l'accompagnement des étudiants à la sensibilisation à la création d'entreprise et "
+        "sur leurs projets d'entreprenariat. "
+        "Ces acitivtés sont proposés aux étudiants hors maquette de formation."
+    )
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data[RESPONSABLE_PORTEUR_ALIAS] = IMPOSTOR_VALUE
     with pytest.raises(ValidationError):
@@ -31,7 +44,10 @@ def test_responsable_porteur_is_normalized(convention_raw_data):
 
 
 def test_origine_is_normalized(convention_raw_data):
-    """Ensure it extracts Origine de la convention properly from a dict"""
+    """
+    Ensure it extracts Origine de la convention properly
+    and verify its content in a Enum
+    """
     valid_raw_data = convention_raw_data[0]
     valid_convention_model = Convention.model_validate(valid_raw_data)
     assert valid_convention_model.origine_de_la_convention == OrigineEnum.INTERNE
@@ -47,7 +63,7 @@ def test_origine_is_normalized(convention_raw_data):
 
 
 def test_partenaire_is_normalized(convention_raw_data):
-    """Ensure it extracts Partenaire properly from a list[dict]"""
+    """Ensure it extracts Partenaire properly"""
     valid_raw_data = convention_raw_data[0]
     valid_convention_model = Convention.model_validate(valid_raw_data)
     assert valid_convention_model.partenaire == "Association PIVOD"
