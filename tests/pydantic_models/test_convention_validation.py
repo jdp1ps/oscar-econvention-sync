@@ -82,7 +82,7 @@ def test_partenaire_is_normalized(convention_raw_data):
         Convention.model_validate(invalid_raw_data)
 
 
-def test_date_is_iso_format(convention_raw_data, unique_logical_date):
+def test_date_convention_format(convention_raw_data, unique_logical_date):
     """
     Ensure that date fields has format DD/MM/YYYY hh:mm.
     then ensure an exception is raised when a date is invalid
