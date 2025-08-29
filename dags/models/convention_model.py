@@ -10,7 +10,6 @@ from pydantic import (
 from utils.type_utils import (
     CONVENTION_TYPE_ENUM,
     CONVENTION_SOUS_TYPE_ENUM,
-    normalize_enum_name,
 )
 from utils.date_utils import (
     CONVENTION_DATE_PATTERN,
@@ -27,6 +26,8 @@ RESPONSABLE_PORTEUR_ALIAS = "ResponsablePorteur"
 REFERENT_DAJI_ALIAS = "ReferentDAJI"
 PARTENAIRE_ALIAS = "Partenaire"
 ORIGINE_CONVENTION_ALIAS = "OrigineConvention"
+TYPE_CONVENTION_ALIAS = "TypeConvention"
+SOUS_TYPE_CONVENTION_ALIAS = "SousType"
 DATE_DEMARRAGE_ALIAS = "DateDemarrage"
 TERME_CONVENTION_ALIAS = "TermeConvention"
 
@@ -66,9 +67,11 @@ class Convention(BaseModel):
         default="", alias="MontantConvention"
     )
     type_convention: CONVENTION_TYPE_ENUM | None = Field(
-        default=None, alias="TypeConvention"
+        default=None, alias=TYPE_CONVENTION_ALIAS
     )
-    sous_type: CONVENTION_SOUS_TYPE_ENUM | None = Field(default=None, alias="SousType")
+    sous_type: CONVENTION_SOUS_TYPE_ENUM | None = Field(
+        default=None, alias=SOUS_TYPE_CONVENTION_ALIAS
+    )
     date_demarrage: str | None = Field(
         default=None, alias=DATE_DEMARRAGE_ALIAS, pattern=CONVENTION_DATE_PATTERN
     )

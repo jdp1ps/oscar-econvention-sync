@@ -6,8 +6,12 @@ from dags.models.convention_model import (
     RESPONSABLE_PORTEUR_ALIAS,
     ORIGINE_CONVENTION_ALIAS,
     PARTENAIRE_ALIAS,
+    TYPE_CONVENTION_ALIAS,
+    SOUS_TYPE_CONVENTION_ALIAS,
 )
+# pylint: disable=wrong-import-order
 from utils.date_utils import to_convention_date_format
+from utils.type_utils import CONVENTION_TYPE_ENUM, CONVENTION_SOUS_TYPE_ENUM
 
 IMPOSTOR_VALUE = 18062018
 
@@ -90,3 +94,45 @@ def test_date_is_iso_format(convention_raw_data, unique_logical_date):
     invalid_raw_data["TermeConvention"] = "01/09/2024 00:00"
     with pytest.raises(ValidationError):
         Convention.model_validate(invalid_raw_data)
+
+
+def test_type_enum(convention_raw_data):
+    """
+    Test validation of TypeConvention and SousType fields using the dynamic enums.
+
+    Steps:
+    1. Validate that the raw convention data produces instances of CONVENTION_TYPE_ENUM
+       and CONVENTION_SOUS_TYPE_ENUM.
+    2. Update TypeConvention and SousType according to the configuration in .env.test
+       and ensure the resulting model still produces correct Enum instances.
+       - TYPE_PARENT_VALUE in .env.test controls which SousType is selected.
+       - TypeConvention and SousType are not automatically linked;
+        mapping depends on CSV and .env.test.
+    3. Test that invalid TypeConvention values raise a ValidationError.
+    4. Test that invalid SousType values raise a ValidationError.
+
+    Args:
+        convention_raw_data: List of raw convention dictionaries for testing.
+        unique_logical_date: Fixture to ensure unique date context if needed.
+    """
+    valid_raw_data = convention_raw_data[0]
+    valid_convention_model = Convention.model_validate(valid_raw_data)
+    assert isinstance(valid_convention_model.type_convention, CONVENTION_TYPE_ENUM)
+    assert isinstance(valid_convention_model.sous_type, CONVENTION_SOUS_TYPE_ENUM)
+
+    valid_raw_data[TYPE_CONVENTION_ALIAS] = "Recherche"
+    valid_raw_data[SOUS_TYPE_CONVENTION_ALIAS] = "Voyage d'études"
+    # Ensure this value exists in the CONVENTION_SOUS_TYPE_CSV_FILE for the test to pass
+
+    assert isinstance(valid_convention_model.type_convention, CONVENTION_TYPE_ENUM)
+    assert isinstance(valid_convention_model.sous_type, CONVENTION_SOUS_TYPE_ENUM)
+
+    invalid_raw_data_type = valid_raw_data.copy()
+    invalid_raw_data_type[TYPE_CONVENTION_ALIAS] = IMPOSTOR_VALUE
+    with pytest.raises(ValidationError):
+        Convention.model_validate(invalid_raw_data_type)
+
+    invalid_raw_data_sous_type = valid_raw_data.copy()
+    invalid_raw_data_sous_type[SOUS_TYPE_CONVENTION_ALIAS] = IMPOSTOR_VALUE
+    with pytest.raises(ValidationError):
+        Convention.model_validate(invalid_raw_data_sous_type)
