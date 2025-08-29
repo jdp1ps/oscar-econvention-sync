@@ -80,11 +80,10 @@ def extract_column_by_filter(
     """
     results = []
     with open(
-        csv_path, mode="r", encoding="utf-8-sig"
+        csv_path, mode="r", encoding="utf-8"
     ) as f:  # utf-8-sig supprime le BOM
         reader = csv.DictReader(f, delimiter=delimiter)
         for row in reader:
-            print(row)
             if row.get(filter_column) == filter_value:
                 results.append(row.get(extract_column))
     return results
