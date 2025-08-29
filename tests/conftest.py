@@ -22,14 +22,14 @@ DATA_DIR = Path(__file__).parent / "data"
 @pytest.fixture(name="convention_raw_data")
 def convention_raw_data_fixture():
     """load data from convention_raw_data.json"""
-    with open(DATA_DIR / "convention_raw_data.json", encoding="utf-8") as f:
+    with open(DATA_DIR / "convention_raw_data2.json", encoding="utf-8") as f:
         return json.load(f)
 
 
 @pytest.fixture(name="activity_expected_data")
 def activity_expected_data_fixture():
     """load data from activity_expected_data.json"""
-    with open(DATA_DIR / "activity_expected_data.json", encoding="utf-8") as f:
+    with open(DATA_DIR / "activity_expected_data2.json", encoding="utf-8") as f:
         return json.load(f)
 
 

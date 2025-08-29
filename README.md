@@ -106,16 +106,25 @@ Once logged in :
   "items": [
     {
       "Reference": "123",
-      "Titre": "Sample title",
+      "Title": "Sample title",
       "Porteur": "Porteur",
-      "Sticture Porteur": "Struct",
-      "Créateur": {
-        "DisplayName": "Admin"
-      }
+      "StructurePorteur": "Struct",
+      "DateDemarrage":"29/08/2025 00:00"
     }
   ]
 }
 ```
+
+You can also trigger oscar_to_econvention without a JSON payload
+
+This process automatically extracts data from your OSCAR database. To set it up, follow these steps:
+
+1. Navigate to Admin > Connections in your Airflow interface.
+2. Click "Add Connection" to open the connection form.
+3. Fill in the form with your PostgreSQL database credentials.
+
+Note: The Connection ID must exactly match the value of POSTGRES_CONN_ID defined in your project's .env file.
+
 
 ---
 
@@ -135,12 +144,10 @@ curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns
       "items":[
       {
         "Reference": "123",
-        "Titre": "Sample title",
+        "Title": "Sample title",
         "Porteur": "Porteur",
-        "Sticture Porteur": "Struct",
-        "Créateur": {
-           "DisplayName": "Admin"
-          }
+        "StructurePorteur": "Struct",
+        "DateDemarrage":"29/08/2025 00:00"
       }
     ]}
   }'

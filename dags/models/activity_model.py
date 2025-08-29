@@ -82,7 +82,7 @@ class Activity(BaseModel):
     datesigned: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     datePFI: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     pfi: str = ""
-    type: str = ""
+    type: str | None = None
     amount: PositiveFloat | None = None
     tva: PositiveFloat | None = None
     currency: CurrencyEnum = CurrencyEnum.EURO
@@ -159,7 +159,7 @@ class Activity(BaseModel):
         Convert type to convention's type
         [TEMPORARY IMPLEMENTATION] This method currently returns an empty string as a placeholder.
         """
-        return ""
+        return None
 
     def to_date_demarrage(self):
         """Convert datestart to convention's date_demarrage"""

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import pytest
 from airflow.utils.state import TaskInstanceState
-from dags.utils.config import FALLBACK_OUTPUT_DIR
+from dags.models.convention_model import TITRE_ALIAS
 from tests.utils.dag import (
     create_dag_run,
     create_task_instance,
@@ -33,7 +33,7 @@ def test_exceptions_receive(
     and modify the extracted JSON data used in the Airflow DAG pipeline.
     """
     invalid_data = convention_raw_data
-    invalid_data[0]["Titre"] = IMPOSTOR_VALUE
+    invalid_data[0][TITRE_ALIAS] = IMPOSTOR_VALUE
     dag_run = create_dag_run(
         dag=econvention_to_oscar_dag,
         logical_date=unique_logical_date,

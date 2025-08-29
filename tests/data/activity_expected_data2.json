@@ -1,0 +1,47 @@
+[
+  {
+    "acronym": "2025-08-29",
+    "amount": null,
+    "currency": "Euro",
+    "datePFI": null,
+    "dateend": "2027-01-09",
+    "datesigned": null,
+    "datestart": "2024-01-09",
+    "description": "Convention de partenariat entre la formation MIAGE et l'association PIVOD pour l'accompagnement des étudiants à la sensibilisation à la création d'entreprise et sur leurs projets d'entreprenariat. Ces acitivtés sont proposés aux étudiants hors maquette de formation.",
+    "financialImpact": "Aucune",
+    "label": "Convention MIAGE - Association PIVOD",
+    "milestones": [
+      {
+        "date": null,
+        "description": "",
+        "type": "100 - Dossier Complet"
+      }
+    ],
+    "organizations": {
+      "Partenaire": [
+        "Association PIVOD"
+      ],
+      "StructurePorteur": [
+        "UFR 27 : Mathématiques et informatique"
+      ]
+    },
+    "payments": [],
+    "persons": {
+      "Porteur": [
+        "Carine Souveyet Jarosz"
+      ],
+      "ReferentDAJI": [
+        "David Dubois-Penicaud"
+      ],
+      "ResponsablePorteur": [
+        "Personnels:Roles:DIR UFR UFR 27"
+      ]
+    },
+    "pfi": "",
+    "projectlabel": "2025-08-29",
+    "status": 404,
+    "tva": null,
+    "type": "",
+    "uid": "eC2024-1"
+  }
+]

@@ -4,8 +4,8 @@ from dateutil.parser import ParserError
 
 ACTIVITY_DATE_PATTERN = r"^\d{4}-\d{2}-\d{2}$"
 
-CONVENTION_DATE_PATTERN = r"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}$"
-CONVENTION_DATE_FORMAT = "%Y/%m/%d %H:%M"
+CONVENTION_DATE_PATTERN = r"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$"
+CONVENTION_DATE_FORMAT = "%d/%m/%Y %H:%M"
 
 
 def to_iso_date(raw_date: str) -> str | None:
@@ -23,7 +23,7 @@ def to_iso_date(raw_date: str) -> str | None:
 
 def to_convention_date_format(raw_date: str) -> str | None:
     """
-    Ensure that the field has format YYYY/MM/DD hh:mm.
+    Ensure that the field has format DD/MM/YYYY hh:mm.
     If not, try to parse it and convert to this format.
     """
     if raw_date is None or re.fullmatch(CONVENTION_DATE_PATTERN, raw_date):
