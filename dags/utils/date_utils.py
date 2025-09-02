@@ -8,7 +8,7 @@ CONVENTION_DATE_PATTERN = r"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$"
 CONVENTION_DATE_FORMAT = "%d/%m/%Y %H:%M"
 
 
-def to_iso_date(raw_date: str) -> str | None:
+def to_activity_date_format(raw_date: str) -> str | None:
     """
     Ensure that the field has format YYYY-MM-DD.
     If not, try to parse it and convert to ISO date.
@@ -16,7 +16,7 @@ def to_iso_date(raw_date: str) -> str | None:
     if raw_date is None or re.fullmatch(ACTIVITY_DATE_PATTERN, raw_date):
         return raw_date
     try:
-        return parser.parse(raw_date).date().isoformat()
+        return parser.parse(raw_date, dayfirst=True).date().isoformat()
     except ParserError as e:
         raise ValueError(f"Invalid date format: {raw_date}") from e
 
@@ -29,7 +29,7 @@ def to_convention_date_format(raw_date: str) -> str | None:
     if raw_date is None or re.fullmatch(CONVENTION_DATE_PATTERN, raw_date):
         return raw_date
     try:
-        return parser.parse(raw_date).strftime(CONVENTION_DATE_FORMAT)
+        return parser.parse(raw_date, dayfirst=True).strftime(CONVENTION_DATE_FORMAT)
     except ParserError as e:
         raise ValueError(f"Invalid date format: {raw_date}") from e
 

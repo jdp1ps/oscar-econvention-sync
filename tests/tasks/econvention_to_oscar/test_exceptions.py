@@ -8,14 +8,15 @@ from tests.utils.dag import (
     create_task_instance,
 )
 
-
+TRANSFORM_TASK_ID = "transform_econvention_to_oscar"
 TRANSFORM_TASK_NAME = (
-    "dags.tasks.econvention_to_oscar.transform_econvention_to_oscar"
-    ".transform_econvention_to_oscar"
+    "dags.tasks.econvention_to_oscar.transform_econvention_to_oscar."
+    + TRANSFORM_TASK_ID
 )
+CREATE_JSON_TO_OSCAR_TASK_ID = "create_import_json_to_oscar"
 CREATE_JSON_TO_OSCAR_TASK_NAME = (
-    "dags.tasks.econvention_to_oscar.create_import_json_to_oscar"
-    ".create_import_json_to_oscar"
+    "dags.tasks.econvention_to_oscar.create_import_json_to_oscar."
+    + CREATE_JSON_TO_OSCAR_TASK_ID
 )
 IMPOSTOR_VALUE = 18052018
 
@@ -88,9 +89,7 @@ def test_transform_econvention_to_oscar(dag_with_parameter, unique_logical_date)
         logical_date=unique_logical_date,
     )
     with pytest.raises(ValueError):
-        create_task_instance(
-            dag_with_parameter, dag_run, "transform_econvention_to_oscar"
-        )
+        create_task_instance(dag_with_parameter, dag_run, TRANSFORM_TASK_ID)
 
 
 @pytest.mark.parametrize(
@@ -145,12 +144,10 @@ def test_import_json_file_with_fallback(
         dag=dag_with_parameter,
         logical_date=unique_logical_date,
     )
-    ti = create_task_instance(
-        dag_with_parameter, dag_run, "create_import_json_to_oscar"
-    )
+    ti = create_task_instance(dag_with_parameter, dag_run, CREATE_JSON_TO_OSCAR_TASK_ID)
     assert ti.state == TaskInstanceState.SUCCESS
 
-    file_path = Path(ti.xcom_pull(task_ids="create_import_json_to_oscar"))
+    file_path = Path(ti.xcom_pull(task_ids=CREATE_JSON_TO_OSCAR_TASK_ID))
     assert file_path.exists()
     assert file_path.parent.exists()
 

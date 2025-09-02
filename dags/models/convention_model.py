@@ -7,14 +7,13 @@ from pydantic import (
     field_validator,
     NonNegativeFloat,
 )
-from models.activity_model import Milestone
 from utils.type_utils import (
     CONVENTION_TYPE_ENUM,
     CONVENTION_SOUS_TYPE_ENUM,
 )
 from utils.date_utils import (
     CONVENTION_DATE_PATTERN,
-    to_iso_date,
+    to_activity_date_format,
     ensure_start_before_end,
     to_convention_date_format,
 )
@@ -35,6 +34,7 @@ from utils.aliases import (
     TERME_CONVENTION_ALIAS,
     ETAPE_ALIAS,
 )
+from models.submodels import Milestone
 
 
 class OrigineEnum(str, Enum):
@@ -116,9 +116,7 @@ class Convention(BaseModel):
         It is an unofficial acronym indicated with ~
         """
         # pylint: disable=E1101
-        return (
-            "~" + self.partenaire + " " + self.porteur.split()[-1]
-        )
+        return "~" + self.partenaire + " " + self.porteur.split()[-1]
 
     def to_projectlabel(self) -> str:
         """Convert reference to activity's projectlabel"""
@@ -156,11 +154,11 @@ class Convention(BaseModel):
 
     def to_datestart(self) -> str:
         """Convert DateDemarrage to activity's datestart"""
-        return to_iso_date(self.date_demarrage)
+        return to_activity_date_format(self.date_demarrage)
 
     def to_dateend(self) -> str:
         """Convert TermeConvention to activity's dateend"""
-        return to_iso_date(self.terme_convention)
+        return to_activity_date_format(self.terme_convention)
 
     def to_milestones(self) -> list[Milestone]:
         """Convert Etape to activity's milestones"""

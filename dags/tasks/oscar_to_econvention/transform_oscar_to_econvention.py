@@ -16,6 +16,7 @@ from utils.aliases import (
     SOUS_TYPE_CONVENTION_ALIAS,
     DATE_DEMARRAGE_ALIAS,
     TERME_CONVENTION_ALIAS,
+    ORIGINE_CONVENTION_ALIAS,
 )
 
 
@@ -40,9 +41,8 @@ def transform_oscar_to_econvention(activities: list[dict]) -> str:
             | {PARTENAIRE_ALIAS: activity.to_partenaire()}
             | {DESCRIPTION_ALIAS: activity.description or ""}
             | {TYPE_CONVENTION_ALIAS: activity.to_convention_type()}
-            | {
-                SOUS_TYPE_CONVENTION_ALIAS: None
-            }  # à remplir si tu as mapping depuis type/labels
+            | {SOUS_TYPE_CONVENTION_ALIAS: activity.to_convention_sous_type()}
+            | {ORIGINE_CONVENTION_ALIAS: activity.to_convention_origin()}
             | {DATE_DEMARRAGE_ALIAS: activity.to_date_demarrage()}
             | {TERME_CONVENTION_ALIAS: activity.to_terme_convention()}
             | {"Etape": activity.to_etape()}

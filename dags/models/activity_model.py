@@ -9,7 +9,7 @@ from pydantic import (
 from utils.type_utils import CONVENTION_SOUS_TYPE_ENUM, ACTIVITY_TYPE_ENUM
 from utils.date_utils import (
     ACTIVITY_DATE_PATTERN,
-    to_iso_date,
+    to_activity_date_format,
     to_convention_date_format,
     ensure_start_before_end,
 )
@@ -19,6 +19,11 @@ from utils.aliases import (
     RESPONSABLE_PORTEUR_ALIAS,
     REFERENT_DAJI_ALIAS,
     PARTENAIRE_ALIAS,
+)
+from models.convention_model import OrigineEnum
+from models.submodels import (
+    Payment,
+    Milestone,
 )
 
 
@@ -56,26 +61,6 @@ class StatusEnum(int, Enum):
     ABANDONNE = 250
     REFUSE = 201  # alias pour RESILIE
     CONFLIT = 404  # Pas de statut
-
-
-class Payment(BaseModel):
-    """
-    Payment in activity fields with required fields to import in OSCAR
-    """
-
-    amount: NonNegativeFloat
-    date: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
-    predicted: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
-
-
-class Milestone(BaseModel):
-    """
-    Milestone in activity fields with required fields to import in OSCAR
-    """
-
-    type: str
-    date: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
-    description: str = ""
 
 
 class Activity(BaseModel):
@@ -140,8 +125,8 @@ class Activity(BaseModel):
     @field_validator("datestart", "dateend", "datesigned", mode="before")
     @classmethod
     def check_date_format(cls, raw_date) -> str:
-        """wrapper to call to_iso_date used by models"""
-        return to_iso_date(raw_date)
+        """wrapper to call to_activity_date_format used by models"""
+        return to_activity_date_format(raw_date)
 
     def to_reference(self) -> str:
         """Convert uid to convention's reference"""
@@ -151,34 +136,58 @@ class Activity(BaseModel):
         """Convert label to convention's title"""
         return self.label
 
+    @classmethod
+    def get_str_from_dict(cls, alias_key: str, field_value: dict) -> str:
+        """
+        Getting value from dict, if it's None then return ""
+        unless it's Porteur because it's a mandatory field
+        """
+        value = field_value.get(alias_key)
+        if value is None:
+            return value if alias_key == PORTEUR_ALIAS else ""
+        return value[0]
+
     def to_porteur(self) -> str:
         """Convert part of persons to convention's porteur"""
-        porteur = self.persons.get(PORTEUR_ALIAS)
-        if porteur is None:
-            raise ValueError(f"Invalid porteur: {porteur}")
-        return porteur[0]
+        return self.get_str_from_dict(PORTEUR_ALIAS, self.persons)
 
     def to_responsable_porteur(self) -> str:
         """Convert part of persons to convention's responsable porteur"""
-        return self.persons.get(RESPONSABLE_PORTEUR_ALIAS, "")
+        return self.get_str_from_dict(RESPONSABLE_PORTEUR_ALIAS, self.persons)
 
     def to_referent_daji(self) -> str:
         """Convert part of persons to convention's referent"""
-        return self.persons.get(REFERENT_DAJI_ALIAS, "")
+        return self.get_str_from_dict(REFERENT_DAJI_ALIAS, self.persons)
 
     def to_structure(self) -> str:
         """Convert a part of organizations to convention's structure"""
-        return self.persons.get(STRUCTURE_PORTEUR_ALIAS, "")
+        return self.get_str_from_dict(STRUCTURE_PORTEUR_ALIAS, self.organizations)
 
     def to_partenaire(self) -> str:
         """Convert a part of organizations to convention's partenaire"""
-        return self.persons.get(PARTENAIRE_ALIAS, "")
+        return self.get_str_from_dict(PARTENAIRE_ALIAS, self.organizations)
 
     def to_convention_type(self) -> str:
         """
         Convert type to convention's type
         """
+        return "Recherche"
+
+    def to_convention_sous_type(self) -> str:
+        """
+        Convert type to convention's type
+        """
         return self.type
+
+    def to_convention_origin(self) -> str:
+        """
+        Convert type to convention's origin
+        if it's fund by a partner then it's Partenaire,
+        else Interne
+        """
+        if self.get_str_from_dict(PARTENAIRE_ALIAS, self.organizations) == "":
+            return OrigineEnum.INTERNE
+        return OrigineEnum.PARTENAIRE
 
     def to_date_demarrage(self) -> str:
         """Convert datestart to convention's date_demarrage"""

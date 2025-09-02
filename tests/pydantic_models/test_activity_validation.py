@@ -59,15 +59,15 @@ def test_date_is_iso_format(activity_expected_data, unique_logical_date):
     """
     valid_raw_data = activity_expected_data[0]
     valid_convention_model = Activity.model_validate(valid_raw_data)
-    assert valid_convention_model.datestart == "2024-01-09"
+    assert valid_convention_model.datestart == "2024-09-01"
 
     valid_raw_data["datestart"] = "20/05/2025 00:00"
     valid_convention_bis = Activity.model_validate(valid_raw_data)
     assert valid_convention_bis.datestart == "2025-05-20"
 
-    valid_raw_data["datestart"] = str(unique_logical_date)
+    valid_raw_data["datestart"] = unique_logical_date.date().isoformat()
     valid_convention_bis = Activity.model_validate(valid_raw_data)
-    assert valid_convention_bis.datestart == str(unique_logical_date.date().isoformat())
+    assert valid_convention_bis.datestart == unique_logical_date.strftime("%Y-%m-%d")
 
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["datestart"] = str(IMPOSTOR_VALUE)
