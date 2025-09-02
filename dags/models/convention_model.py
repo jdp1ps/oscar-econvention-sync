@@ -115,9 +115,10 @@ class Convention(BaseModel):
         to create activity's acronym automatically
         It is an unofficial acronym indicated with ~
         """
+        # pylint: disable=E1101
         return (
             "~" + self.partenaire + " " + self.porteur.split()[-1]
-        )  # pylint: disable=E1101
+        )
 
     def to_projectlabel(self) -> str:
         """Convert reference to activity's projectlabel"""
