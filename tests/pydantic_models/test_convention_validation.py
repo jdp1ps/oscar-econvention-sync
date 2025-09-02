@@ -9,6 +9,8 @@ from utils.aliases import (
     PARTENAIRE_ALIAS,
     TYPE_CONVENTION_ALIAS,
     SOUS_TYPE_CONVENTION_ALIAS,
+    DATE_DEMARRAGE_ALIAS,
+    TERME_CONVENTION_ALIAS
 )
 from utils.date_utils import to_convention_date_format
 from utils.type_utils import CONVENTION_TYPE_ENUM, CONVENTION_SOUS_TYPE_ENUM
@@ -90,23 +92,23 @@ def test_date_convention_format(convention_raw_data, unique_logical_date):
     valid_convention_model = Convention.model_validate(valid_raw_data)
     assert valid_convention_model.date_demarrage == "01/09/2024 00:00"
 
-    valid_raw_data["DateDemarrage"] = "2025-05-20"
+    valid_raw_data[DATE_DEMARRAGE_ALIAS] = "2025-05-20"
     valid_convention_bis = Convention.model_validate(valid_raw_data)
     assert valid_convention_bis.date_demarrage == "20/05/2025 00:00"
 
-    valid_raw_data["DateDemarrage"] = str(unique_logical_date)
+    valid_raw_data[DATE_DEMARRAGE_ALIAS] = str(unique_logical_date)
     valid_convention_bis = Convention.model_validate(valid_raw_data)
     assert valid_convention_bis.date_demarrage == to_convention_date_format(
         str(unique_logical_date)
     )
 
     invalid_raw_data = valid_raw_data.copy()
-    invalid_raw_data["DateDemarrage"] = str(IMPOSTOR_VALUE)
+    invalid_raw_data[DATE_DEMARRAGE_ALIAS] = str(IMPOSTOR_VALUE)
     with pytest.raises(ValidationError):
         Convention.model_validate(invalid_raw_data)
 
-    invalid_raw_data["DateDemarrage"] = "01/09/2027 00:00"
-    invalid_raw_data["TermeConvention"] = "01/09/2024 00:00"
+    invalid_raw_data[DATE_DEMARRAGE_ALIAS] = "01/09/2027 00:00"
+    invalid_raw_data[TERME_CONVENTION_ALIAS] = "01/09/2024 00:00"
     with pytest.raises(ValidationError):
         Convention.model_validate(invalid_raw_data)
 
