@@ -16,7 +16,7 @@ from tasks.oscar_to_econvention.transform_oscar_to_econvention import (
 with DAG(
     dag_id="oscar_to_econvention",
     start_date=datetime(2025, 7, 30),
-    schedule=None,
+    schedule="*/10 * * * *",  # “At every 10th minute.”
     catchup=False,
     tags=["api", "json", "etl", "post"],
 ) as oscar_to_econvention:

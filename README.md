@@ -118,13 +118,19 @@ Once logged in :
 }
 ```
 
-You can also trigger oscar_to_econvention without a JSON payload
+You can also trigger oscar_to_econvention DAG without a JSON payload
 
 This process automatically extracts data from your OSCAR database. To set it up, follow these steps:
 
 1. Navigate to Admin > Connections in your Airflow interface.
 2. Click "Add Connection" to open the connection form.
 3. Fill in the form with your PostgreSQL database credentials.
+
+Or, you can run this following command:
+```bash
+airflow connections add <connection_id_name> \
+    --conn-uri postgresql://<user>:<password>@<host>:5432/<db_name>
+```
 
 Note: The Connection ID must exactly match the value of POSTGRES_CONN_ID defined in your project's .env file.
 

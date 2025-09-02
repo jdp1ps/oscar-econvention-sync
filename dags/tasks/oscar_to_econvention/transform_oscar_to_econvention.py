@@ -1,5 +1,4 @@
 import json
-import logging
 from airflow.decorators import task
 from pydantic import ValidationError
 from models.activity_model import Activity
@@ -52,9 +51,8 @@ def transform_oscar_to_econvention(activities: list[dict]) -> str:
             convention_list.append(Convention.model_validate(mapping))
         except ValidationError as e:
             errors.append({"index": i, "errors": e.errors()})
-
     if len(errors) > 0:
-        logging.error("Some activities failed mapping process: %s", errors)
+        raise ValueError(f"Some activities failed validation: {errors}")
 
     results = json.dumps(
         [convention.model_dump(by_alias=True) for convention in convention_list],
