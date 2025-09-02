@@ -108,8 +108,11 @@ Once logged in :
       "Reference": "123",
       "Title": "Sample title",
       "Porteur": "Porteur",
+      "Partenaire": "Partenaire",
       "StructurePorteur": "Struct",
-      "DateDemarrage":"29/08/2025 00:00"
+      "DateDemarrage": "29/08/2025 00:00",
+      "TypeConvention": "Recherche",
+      "SousType": "Appels à projets internes"
     }
   ]
 }
@@ -146,8 +149,11 @@ curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns
         "Reference": "123",
         "Title": "Sample title",
         "Porteur": "Porteur",
+        "Partenaire": "Partenaire",
         "StructurePorteur": "Struct",
-        "DateDemarrage":"29/08/2025 00:00"
+        "DateDemarrage":"29/08/2025 00:00",
+        "TypeConvention": "Recherche",
+        "SousType": "Appels à projets internes"
       }
     ]}
   }'

@@ -1,11 +1,15 @@
 from datetime import datetime
 from airflow import DAG
 from tasks.oscar_to_econvention.pg_get_activity_types import pg_extract_activity_types
-from tasks.oscar_to_econvention.pg_get_migratable_activities import (
-    pg_get_migratable_activities,
+from tasks.oscar_to_econvention.pg_extract_migratable_activities import (
+    pg_extract_migratable_activities,
 )
-
-ACTIVITY_TYPE_LIST = None
+from tasks.oscar_to_econvention.update_activity_types_csv import (
+    update_activity_types_csv,
+)
+from tasks.oscar_to_econvention.transform_oscar_to_econvention import (
+    transform_oscar_to_econvention,
+)
 
 
 # pylint: disable=unexpected-keyword-arg
@@ -17,4 +21,6 @@ with DAG(
     tags=["api", "json", "etl", "post"],
 ) as oscar_to_econvention:
     activity_type_list = pg_extract_activity_types()
-    activities = pg_get_migratable_activities()
+    activity_types_csv_path = update_activity_types_csv(activity_type_list)
+    extracted_activities = pg_extract_migratable_activities()
+    transformed_conventions = transform_oscar_to_econvention(extracted_activities)

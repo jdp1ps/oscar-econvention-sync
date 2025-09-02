@@ -5,8 +5,9 @@ from pydantic import (
     ConfigDict,
     model_validator,
     field_validator,
-    PositiveFloat,
+    NonNegativeFloat,
 )
+from models.activity_model import Milestone
 from utils.type_utils import (
     CONVENTION_TYPE_ENUM,
     CONVENTION_SOUS_TYPE_ENUM,
@@ -17,23 +18,23 @@ from utils.date_utils import (
     ensure_start_before_end,
     to_convention_date_format,
 )
-from models.activity_model import Milestone
-
-REFERENCE_ALIAS = "Reference"
-TITRE_ALIAS = "Title"
-PORTEUR_ALIAS = "Porteur"
-STRUCTURE_PORTEUR_ALIAS = "StructurePorteur"
-RESPONSABLE_PORTEUR_ALIAS = "ResponsablePorteur"
-REFERENT_DAJI_ALIAS = "ReferentDAJI"
-PARTENAIRE_ALIAS = "Partenaire"
-DESCRIPTION_ALIAS = "DescriptionConvention"
-ORIGINE_CONVENTION_ALIAS = "OrigineConvention"
-MONTANT_CONVENTION_ALIAS = "MontantConvention"
-TYPE_CONVENTION_ALIAS = "TypeConvention"
-SOUS_TYPE_CONVENTION_ALIAS = "SousType"
-DATE_DEMARRAGE_ALIAS = "DateDemarrage"
-TERME_CONVENTION_ALIAS = "TermeConvention"
-ETAPE_ALIAS = "Etape"
+from utils.aliases import (
+    REFERENCE_ALIAS,
+    TITRE_ALIAS,
+    PORTEUR_ALIAS,
+    STRUCTURE_PORTEUR_ALIAS,
+    RESPONSABLE_PORTEUR_ALIAS,
+    REFERENT_DAJI_ALIAS,
+    PARTENAIRE_ALIAS,
+    DESCRIPTION_ALIAS,
+    ORIGINE_CONVENTION_ALIAS,
+    MONTANT_CONVENTION_ALIAS,
+    TYPE_CONVENTION_ALIAS,
+    SOUS_TYPE_CONVENTION_ALIAS,
+    DATE_DEMARRAGE_ALIAS,
+    TERME_CONVENTION_ALIAS,
+    ETAPE_ALIAS,
+)
 
 
 class OrigineEnum(str, Enum):
@@ -67,7 +68,7 @@ class Convention(BaseModel):
     origine_de_la_convention: OrigineEnum | None = Field(
         default=None, alias=ORIGINE_CONVENTION_ALIAS
     )
-    montant_convention: PositiveFloat | str = Field(
+    montant_convention: NonNegativeFloat | str = Field(
         default="", alias=MONTANT_CONVENTION_ALIAS
     )
     type_convention: CONVENTION_TYPE_ENUM | None = Field(
@@ -108,6 +109,20 @@ class Convention(BaseModel):
         """Convert reference to activity's uid"""
         return self.reference
 
+    def to_acronym(self) -> str:
+        """
+        Use partenaire and porteur lastname
+        to create activity's acronym automatically
+        It is an unofficial acronym indicated with ~
+        """
+        return (
+            "~" + self.partenaire + " " + self.porteur.split()[-1]
+        )  # pylint: disable=E1101
+
+    def to_projectlabel(self) -> str:
+        """Convert reference to activity's projectlabel"""
+        return self.titre
+
     def to_label(self) -> str:
         """Convert titre to activity's label"""
         return self.titre
@@ -135,9 +150,8 @@ class Convention(BaseModel):
     def to_activity_type(self):
         """
         Converts type to activity's type.
-        [TEMPORARY IMPLEMENTATION] This method currently returns an empty string as a placeholder.
         """
-        return ""
+        return self.sous_type
 
     def to_datestart(self) -> str:
         """Convert DateDemarrage to activity's datestart"""

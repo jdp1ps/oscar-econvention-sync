@@ -6,10 +6,22 @@ import unicodedata
 from utils.config import (
     CONVENTION_TYPE_CSV_FILE_PATH,
     CONVENTION_SOUS_TYPE_CSV_FILE_PATH,
+    ACTIVITY_TYPE_CSV_FILE_PATH,
     TYPE_PARENT_COLUMN_NAME,
     TYPE_PARENT_VALUE,
     VALUE_COLUMN_NAME,
 )
+
+
+def ensure_list_of_dict(raw_data: list[dict]) -> list[dict]:
+    """Ensure that raw_data is a list of dicts"""
+    if raw_data is None:
+        raise ValueError("Missing 'items' key in dag_run.conf.")
+    if not isinstance(raw_data, list):
+        raise ValueError("Expected 'items' to be a list of dictionaries.")
+    if not all(isinstance(item, dict) for item in raw_data):
+        raise ValueError("All items in 'items' must be dictionaries.")
+    return raw_data
 
 
 def normalize_enum_name(name: str) -> str:
@@ -79,9 +91,7 @@ def extract_column_by_filter(
         List of strings from extract_column matching the filter.
     """
     results = []
-    with open(
-        csv_path, mode="r", encoding="utf-8"
-    ) as f:  # utf-8-sig supprime le BOM
+    with open(csv_path, mode="r", encoding="utf-8") as f:
         reader = csv.DictReader(f, delimiter=delimiter)
         for row in reader:
             if row.get(filter_column) == filter_value:
@@ -102,8 +112,6 @@ def create_str_enum_from_list(name: str, values: list[str]) -> Enum:
 CONVENTION_TYPE_ENUM = create_str_enum_from_list(
     "ConventionTypeEnum", csv_column_to_list(CONVENTION_TYPE_CSV_FILE_PATH, 0, True)
 )
-
-
 CONVENTION_SOUS_TYPE_ENUM = create_str_enum_from_list(
     "ConventionSousTypeEnum",
     extract_column_by_filter(
@@ -112,4 +120,7 @@ CONVENTION_SOUS_TYPE_ENUM = create_str_enum_from_list(
         filter_value=TYPE_PARENT_VALUE,
         extract_column=VALUE_COLUMN_NAME,
     ),
+)
+ACTIVITY_TYPE_ENUM = create_str_enum_from_list(
+    "ActivityTypeEnum", csv_column_to_list(ACTIVITY_TYPE_CSV_FILE_PATH, 1, True)
 )

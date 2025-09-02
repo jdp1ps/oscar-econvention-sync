@@ -1,11 +1,24 @@
 from enum import Enum
-from datetime import datetime
-from pydantic import BaseModel, Field, model_validator, field_validator, PositiveFloat
+from pydantic import (
+    BaseModel,
+    Field,
+    model_validator,
+    field_validator,
+    NonNegativeFloat,
+)
+from utils.type_utils import CONVENTION_SOUS_TYPE_ENUM, ACTIVITY_TYPE_ENUM
 from utils.date_utils import (
     ACTIVITY_DATE_PATTERN,
     to_iso_date,
     to_convention_date_format,
     ensure_start_before_end,
+)
+from utils.aliases import (
+    PORTEUR_ALIAS,
+    STRUCTURE_PORTEUR_ALIAS,
+    RESPONSABLE_PORTEUR_ALIAS,
+    REFERENT_DAJI_ALIAS,
+    PARTENAIRE_ALIAS,
 )
 
 
@@ -50,7 +63,7 @@ class Payment(BaseModel):
     Payment in activity fields with required fields to import in OSCAR
     """
 
-    amount: PositiveFloat
+    amount: NonNegativeFloat
     date: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     predicted: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
 
@@ -71,8 +84,8 @@ class Activity(BaseModel):
     """
 
     uid: str
-    acronym: str = Field(default_factory=lambda: datetime.now().date().isoformat())
-    projectlabel: str = Field(default_factory=lambda: datetime.now().date().isoformat())
+    acronym: str = Field(default_factory=lambda: "~")
+    projectlabel: str = Field(default_factory=lambda: "~")
     label: str
     persons: dict = {}
     organizations: dict = {}
@@ -82,9 +95,9 @@ class Activity(BaseModel):
     datesigned: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     datePFI: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     pfi: str = ""
-    type: str | None = None
-    amount: PositiveFloat | None = None
-    tva: PositiveFloat | None = None
+    type: ACTIVITY_TYPE_ENUM | CONVENTION_SOUS_TYPE_ENUM = "Autre"
+    amount: NonNegativeFloat | None = None
+    tva: NonNegativeFloat | None = None
     currency: CurrencyEnum = CurrencyEnum.EURO
     financialImpact: FinancialImpactEnum = FinancialImpactEnum.AUCUNE
     milestones: list[Milestone] = []
@@ -126,49 +139,55 @@ class Activity(BaseModel):
 
     @field_validator("datestart", "dateend", "datesigned", mode="before")
     @classmethod
-    def check_date_format(cls, raw_date):
+    def check_date_format(cls, raw_date) -> str:
         """wrapper to call to_iso_date used by models"""
         return to_iso_date(raw_date)
 
-    def to_reference(self):
+    def to_reference(self) -> str:
         """Convert uid to convention's reference"""
-        return self.to_uid()
+        return self.uid
 
-    def to_titre(self):
+    def to_titre(self) -> str:
         """Convert label to convention's title"""
         return self.label
 
-    def to_porteur(self):
+    def to_porteur(self) -> str:
         """Convert part of persons to convention's porteur"""
-        return self.persons.get("Porteur")
+        porteur = self.persons.get(PORTEUR_ALIAS)
+        if porteur is None:
+            raise ValueError(f"Invalid porteur: {porteur}")
+        return porteur[0]
 
-    def to_createur(self):
-        """Convert part of persons to convention's createur"""
-        return self.persons.get("Createur")
+    def to_responsable_porteur(self) -> str:
+        """Convert part of persons to convention's responsable porteur"""
+        return self.persons.get(RESPONSABLE_PORTEUR_ALIAS, "")
 
-    def to_structure(self):
+    def to_referent_daji(self) -> str:
+        """Convert part of persons to convention's referent"""
+        return self.persons.get(REFERENT_DAJI_ALIAS, "")
+
+    def to_structure(self) -> str:
         """Convert a part of organizations to convention's structure"""
-        return self.organizations.get("Structure")
+        return self.persons.get(STRUCTURE_PORTEUR_ALIAS, "")
 
-    def to_partenaire(self):
+    def to_partenaire(self) -> str:
         """Convert a part of organizations to convention's partenaire"""
-        return self.organizations.get("Partenaire")
+        return self.persons.get(PARTENAIRE_ALIAS, "")
 
-    def to_convention_type(self):
+    def to_convention_type(self) -> str:
         """
         Convert type to convention's type
-        [TEMPORARY IMPLEMENTATION] This method currently returns an empty string as a placeholder.
         """
-        return None
+        return self.type
 
-    def to_date_demarrage(self):
+    def to_date_demarrage(self) -> str:
         """Convert datestart to convention's date_demarrage"""
         return to_convention_date_format(self.datestart)
 
-    def to_terme_convention(self):
+    def to_terme_convention(self) -> str:
         """Convert dateend to convention's terme_convention"""
         return to_convention_date_format(self.dateend)
 
-    def to_etape(self):
-        """Convert milestones to convention's etape"""
-        return self.milestones
+    def to_etape(self) -> str:
+        """Return to convention's initial etape"""
+        return "0 - Brouillon"

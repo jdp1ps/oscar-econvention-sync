@@ -1,6 +1,6 @@
 [
   {
-    "acronym": "2025-08-29",
+    "acronym": "~Association PIVOD Jarosz",
     "amount": null,
     "currency": "Euro",
     "datePFI": null,
@@ -38,10 +38,10 @@
       ]
     },
     "pfi": "",
-    "projectlabel": "2025-08-29",
+    "projectlabel": "Convention MIAGE - Association PIVOD",
     "status": 404,
     "tva": null,
-    "type": "",
+    "type": "ANR",
     "uid": "eC2024-1"
   }
 ]

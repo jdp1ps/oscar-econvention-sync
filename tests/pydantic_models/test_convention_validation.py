@@ -1,16 +1,15 @@
 import pytest
 from pydantic import ValidationError
-from dags.models.convention_model import (
-    Convention,
-    OrigineEnum,
+from dags.models.convention_model import Convention, OrigineEnum
+
+# pylint: disable=wrong-import-order
+from utils.aliases import (
     RESPONSABLE_PORTEUR_ALIAS,
     ORIGINE_CONVENTION_ALIAS,
     PARTENAIRE_ALIAS,
     TYPE_CONVENTION_ALIAS,
     SOUS_TYPE_CONVENTION_ALIAS,
 )
-
-# pylint: disable=wrong-import-order
 from utils.date_utils import to_convention_date_format
 from utils.type_utils import CONVENTION_TYPE_ENUM, CONVENTION_SOUS_TYPE_ENUM
 
@@ -137,7 +136,7 @@ def test_type_enum(convention_raw_data):
     assert isinstance(valid_convention_model.sous_type, CONVENTION_SOUS_TYPE_ENUM)
 
     valid_raw_data[TYPE_CONVENTION_ALIAS] = "Recherche"
-    valid_raw_data[SOUS_TYPE_CONVENTION_ALIAS] = "Voyage d'études"
+    valid_raw_data[SOUS_TYPE_CONVENTION_ALIAS] = "Appels à projets internes"
     # Ensure this value exists in the CONVENTION_SOUS_TYPE_CSV_FILE for the test to pass
 
     assert isinstance(valid_convention_model.type_convention, CONVENTION_TYPE_ENUM)

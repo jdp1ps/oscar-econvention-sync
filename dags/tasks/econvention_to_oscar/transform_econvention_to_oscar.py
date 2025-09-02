@@ -17,6 +17,8 @@ def transform_econvention_to_oscar(conventions: list[dict]) -> str:
     for i, convention in enumerate(convention_list):
         mapping = (
             {"uid": convention.to_uid()}
+            | {"acronym": convention.to_acronym()}
+            | {"projectlabel": convention.to_projectlabel()}
             | {"label": convention.to_label()}
             | {"persons": convention.to_persons()}
             | {"organizations": convention.to_organizations()}
