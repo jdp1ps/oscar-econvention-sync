@@ -10,7 +10,7 @@ def transform_econvention_to_oscar(conventions: list[dict]) -> str:
     """Transform data from ECONVENTION to OSCAR by mapping their attribute."""
 
     convention_list: list[Convention] = [
-        Convention.model_validate(econvention) for econvention in conventions
+        Convention.model_validate(convention) for convention in conventions
     ]
     activity_list: list[Activity] = []
     errors = []
