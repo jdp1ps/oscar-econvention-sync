@@ -21,22 +21,22 @@ def pg_confirm_migratable_conventions(migrated_conventions: str) -> int:
     confirmed_uid_list = [
         convention.to_uid() for convention in migrated_convention_list
     ]
-
-    hook = PostgresHook(postgres_conn_id=POSTGRES_CONN_ID)
-    conn = hook.get_conn()
-    cursor = conn.cursor()
-    cursor.execute(
-        """
-        UPDATE ACTIVITYDATE AS ad
-        SET comment = 'Activité extraite'
-        FROM ACTIVITY AS a
-        WHERE ad.activity_id = a.id
-            AND ad.finished = 100
-            AND a.centaureid IN %s;
-        """,
-        (tuple(confirmed_uid_list),),
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
+    if len(confirmed_uid_list) > 0:
+        hook = PostgresHook(postgres_conn_id=POSTGRES_CONN_ID)
+        conn = hook.get_conn()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE ACTIVITYDATE AS ad
+            SET comment = 'Activité extraite !'
+            FROM ACTIVITY AS a
+            WHERE ad.activity_id = a.id
+                AND ad.finished = 100
+                AND a.centaureid IN %s;
+            """,
+            (tuple(confirmed_uid_list),),
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
     return 0
