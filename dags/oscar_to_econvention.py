@@ -10,7 +10,9 @@ from tasks.oscar_to_econvention.update_activity_types_csv import (
 from tasks.oscar_to_econvention.transform_oscar_to_econvention import (
     transform_oscar_to_econvention,
 )
-
+from tasks.oscar_to_econvention.pg_confirm_migrated_conventions import (
+    pg_confirm_migratable_conventions,
+)
 
 # pylint: disable=unexpected-keyword-arg
 with DAG(
@@ -24,3 +26,4 @@ with DAG(
     activity_types_csv_path = update_activity_types_csv(activity_type_list)
     extracted_activities = pg_extract_migratable_activities()
     transformed_conventions = transform_oscar_to_econvention(extracted_activities)
+    pg_confirm_migratable_conventions(transformed_conventions)
