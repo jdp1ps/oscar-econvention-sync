@@ -11,11 +11,12 @@ from utils.aliases import (
     REFERENT_DAJI_ALIAS,
     PARTENAIRE_ALIAS,
     DESCRIPTION_ALIAS,
+    ORIGINE_CONVENTION_ALIAS,
+    MONTANT_CONVENTION_ALIAS,
     TYPE_CONVENTION_ALIAS,
     SOUS_TYPE_CONVENTION_ALIAS,
     DATE_DEMARRAGE_ALIAS,
     TERME_CONVENTION_ALIAS,
-    ORIGINE_CONVENTION_ALIAS,
 )
 
 
@@ -42,6 +43,7 @@ def transform_oscar_to_econvention(activities: list[dict]) -> str:
             | {TYPE_CONVENTION_ALIAS: activity.to_convention_type()}
             | {SOUS_TYPE_CONVENTION_ALIAS: activity.to_convention_sous_type()}
             | {ORIGINE_CONVENTION_ALIAS: activity.to_convention_origin()}
+            | {MONTANT_CONVENTION_ALIAS: activity.to_convention_montant()}
             | {DATE_DEMARRAGE_ALIAS: activity.to_date_demarrage()}
             | {TERME_CONVENTION_ALIAS: activity.to_terme_convention()}
             | {"Etape": activity.to_etape()}

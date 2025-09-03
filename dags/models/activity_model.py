@@ -189,6 +189,10 @@ class Activity(BaseModel):
             return OrigineEnum.INTERNE
         return OrigineEnum.PARTENAIRE
 
+    def to_convention_montant(self) -> str:
+        """Convert amount to convention's montant"""
+        return f"{self.amount:.2f}"
+
     def to_date_demarrage(self) -> str:
         """Convert datestart to convention's date_demarrage"""
         return to_convention_date_format(self.datestart)

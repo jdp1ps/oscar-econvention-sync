@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from pydantic import (
     BaseModel,
@@ -68,9 +69,7 @@ class Convention(BaseModel):
     origine_de_la_convention: OrigineEnum | None = Field(
         default=None, alias=ORIGINE_CONVENTION_ALIAS
     )
-    montant_convention: NonNegativeFloat | str = Field(
-        default="", alias=MONTANT_CONVENTION_ALIAS
-    )
+    montant_convention: str = Field(default="", alias=MONTANT_CONVENTION_ALIAS)
     type_convention: CONVENTION_TYPE_ENUM | None = Field(
         default=None, alias=TYPE_CONVENTION_ALIAS
     )
@@ -99,11 +98,25 @@ class Convention(BaseModel):
 
     @field_validator("date_demarrage", "terme_convention", mode="before")
     @classmethod
-    def check_date_format(cls, raw_date) -> str:
+    def check_date_format(cls, raw_date: str) -> str:
         """
         wrapper to call to_convention_date_format used by models
         """
         return to_convention_date_format(raw_date)
+
+    @field_validator("montant_convention", mode="after")
+    @classmethod
+    def normalize_montant_convention(cls, raw_montant: str) -> str:
+        """
+        Normalize montant_convention by removing spaces and
+        replacing commas with dots to ease NonNegativeFloat parsing.
+        """
+        try:
+            cleaned_montant = raw_montant.replace(" ", "").replace(",", ".")
+            NonNegativeFloat(cleaned_montant)  # Try to convert if the conversion works
+            return cleaned_montant
+        except ValueError as e:
+            raise ValueError(f"Invalid montant format: {raw_montant}") from e
 
     def to_uid(self) -> str:
         """Convert reference to activity's uid"""
@@ -151,6 +164,20 @@ class Convention(BaseModel):
         Converts type to activity's type.
         """
         return self.sous_type
+
+    def to_amount(self) -> NonNegativeFloat:
+        """
+        Converts montant's convention which has a clean format to amount.
+        """
+        try:
+            return NonNegativeFloat(self.montant_convention)
+        except ValueError:
+            logging.warning(
+                "Invalid float value %s for %s, amount equal 0 instead !",
+                self.montant_convention,
+                self.reference,
+            )
+            return 0
 
     def to_datestart(self) -> str:
         """Convert DateDemarrage to activity's datestart"""

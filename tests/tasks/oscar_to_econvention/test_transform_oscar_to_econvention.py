@@ -79,7 +79,7 @@ def test_transform_oscar_to_econvention(dag_with_parameter, unique_logical_date)
             "SousType": "ANR",
             "DateDemarrage": "01/09/2024 00:00",
             "TermeConvention": "01/09/2027 00:00",
-            "MontantConvention": "",
+            "MontantConvention": "100.10",
             "Etape": "0 - Brouillon",
         }
     ]

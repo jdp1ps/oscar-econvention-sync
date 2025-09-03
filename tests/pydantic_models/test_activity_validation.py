@@ -84,7 +84,7 @@ def test_amount_is_normalized(activity_expected_data):
     """Ensure it extracts amount properly from dict"""
     valid_raw_data = activity_expected_data[0]
     valid_convention_model = Activity.model_validate(valid_raw_data)
-    assert valid_convention_model.amount is None
+    assert valid_convention_model.amount == 500000.50
 
     valid_raw_data["amount"] = 666
     valid_convention_bis = Activity.model_validate(valid_raw_data)

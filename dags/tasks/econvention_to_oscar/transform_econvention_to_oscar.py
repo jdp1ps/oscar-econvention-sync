@@ -23,7 +23,8 @@ def transform_econvention_to_oscar(conventions: list[dict]) -> str:
             | {"persons": convention.to_persons()}
             | {"organizations": convention.to_organizations()}
             | {"description": convention.description or ""}
-            | {"type": convention.to_activity_type() or ""}
+            | {"amount": convention.to_amount()}
+            | {"type": convention.to_activity_type()}
             | {"datestart": convention.to_datestart() or None}
             | {"dateend": convention.to_dateend() or None}
             | {"milestones": convention.to_milestones() or []}
