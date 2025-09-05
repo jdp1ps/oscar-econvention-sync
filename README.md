@@ -208,13 +208,15 @@ Open Oracle VirtualBox:
 3. Fill User Name and Password
 4. Set Base Memory to 8192 MB, Number of CPUs to 4, Disk to 100 GB
 
-**Note:** Change Graphics Controller to **VBoxVGA** (VMSVGA is not supported).
-
 **Default configurations:**
 - Network: NAT
 - USB: USB 2.0 Controller
+
+**Note:** Change Graphics Controller to **VBoxVGA** (VMSVGA is not supported).
+
 **Note:** If keyboard and mouse inputs do not work in the VM, switch to **USB 1.1 (OHCI)**.  
 This ensures proper capture of input devices in Ubuntu 24.04 Desktop under VirtualBox.  
+
 ---
 
 ### 2. Setup fresh Ubuntu 24.04 VM
