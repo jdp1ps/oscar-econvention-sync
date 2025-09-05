@@ -308,7 +308,20 @@ cat ~/airflow/simple_auth_manager_passwords.json.generated
 ```
 
 #### Run tests
+
+Before running tests, make sure Airflow is pointing to the project DAGs by creating a symbolic link:
+```bash
+ln -s ~/oscar-econvention-sync/dags ~/airflow/dags
+```
+You can verify that the link is correctly created with:
+```bash
+ls -l ~/airflow
+```
+
+It should display something like: ```ini dags -> /home/user/oscar-econvention-sync/dags```
+
+Now you can run the tests:
+
 ```bash
 APP_ENV=TEST pytest
 ```
-Note: It's temporary that some pytest tests failed.
