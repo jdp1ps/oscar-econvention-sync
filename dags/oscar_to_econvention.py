@@ -16,6 +16,9 @@ from tasks.oscar_to_econvention.transform_oscar_to_econvention import (
 from tasks.oscar_to_econvention.redis_confirm_migrated_conventions import (
     redis_confirm_migrated_conventions,
 )
+from tasks.oscar_to_econvention.create_import_json_to_econvention import (
+    create_import_json_to_econvention
+)
 
 # pylint: disable=unexpected-keyword-arg
 with DAG(
@@ -33,3 +36,4 @@ with DAG(
     extracted_activities = redis_validate_activities(raw_activities)
     transformed_conventions = transform_oscar_to_econvention(extracted_activities)
     redis_confirm_migrated_conventions(transformed_conventions)
+    create_import_json_to_econvention(transformed_conventions)

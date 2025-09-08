@@ -21,7 +21,7 @@ DEPENSES_ALIAS = "Depenses"
 CHARGEE_DE_VALORISATION_ALIAS = "Chargé(e) de valorisation"
 
 # OTHERS
-CONFIRMED_ACTIVITY_ALIAS = "ConfirmedActivities"
+CONFIRMED_ACTIVITY_ALIAS = "Confirmedctivities"
 
 # Mapping role CONVENTION/OSCAR
 

@@ -1,8 +1,8 @@
 import os
 import re
-import pathlib
 from airflow.decorators import task
-from utils.config import ECONVENTION_TO_OSCAR_OUTPUT_DIR, FALLBACK_OUTPUT_DIR
+from utils.config import ECONVENTION_TO_OSCAR_OUTPUT_DIR
+from utils.file_utils import create_in_fallback_dir
 
 
 @task
@@ -35,11 +35,7 @@ def create_import_json_to_oscar(data: str, **context) -> list[dict]:
         return import_json_path
 
     except (PermissionError, FileNotFoundError):
-        fallback_path = os.path.join(FALLBACK_OUTPUT_DIR, output_filename)
-        pathlib.Path(FALLBACK_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-        with open(fallback_path, "w", encoding="utf-8") as f:
-            f.write(data)
-        return str(fallback_path)
+        return create_in_fallback_dir(data, output_filename)
 
     except Exception as e:
         raise RuntimeError("Unhandled exception while writing file") from e
