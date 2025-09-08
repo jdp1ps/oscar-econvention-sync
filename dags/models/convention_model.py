@@ -1,5 +1,3 @@
-import logging
-from enum import Enum
 from pydantic import (
     BaseModel,
     Field,
@@ -34,17 +32,12 @@ from utils.aliases import (
     DATE_DEMARRAGE_ALIAS,
     TERME_CONVENTION_ALIAS,
     ETAPE_ALIAS,
+    RECETTES_ALIAS,
+    DEPENSES_ALIAS,
+    convert_role_for_activity,
 )
 from models.submodels import Milestone
-
-
-class OrigineEnum(str, Enum):
-    """
-    The convention is originated from intern or partner
-    """
-
-    INTERNE = "Interne"
-    PARTENAIRE = "Partenaire"
+from models.enum_models import FinancialImpactEnum, OrigineEnum
 
 
 class Convention(BaseModel):
@@ -70,6 +63,8 @@ class Convention(BaseModel):
         default=None, alias=ORIGINE_CONVENTION_ALIAS
     )
     montant_convention: str = Field(default="", alias=MONTANT_CONVENTION_ALIAS)
+    recettes_convention: str = Field(default="", alias=RECETTES_ALIAS)
+    depenses_convention: str = Field(default="", alias=DEPENSES_ALIAS)
     type_convention: CONVENTION_TYPE_ENUM | None = Field(
         default=None, alias=TYPE_CONVENTION_ALIAS
     )
@@ -104,7 +99,9 @@ class Convention(BaseModel):
         """
         return to_convention_date_format(raw_date)
 
-    @field_validator("montant_convention", mode="after")
+    @field_validator(
+        "montant_convention", "recettes_convention", "depenses_convention", mode="after"
+    )
     @classmethod
     def normalize_montant_convention(cls, raw_montant: str) -> str:
         """
@@ -112,6 +109,8 @@ class Convention(BaseModel):
         replacing commas with dots to ease NonNegativeFloat parsing.
         """
         try:
+            if len(raw_montant) == 0:
+                return raw_montant
             cleaned_montant = raw_montant.replace(" ", "").replace(",", ".")
             NonNegativeFloat(cleaned_montant)  # Try to convert if the conversion works
             return cleaned_montant
@@ -143,19 +142,15 @@ class Convention(BaseModel):
         """Convert some persons to activity's persons"""
 
         temp_data = {
-            PORTEUR_ALIAS: self.porteur,
-            RESPONSABLE_PORTEUR_ALIAS: self.responsable_porteur,
-            REFERENT_DAJI_ALIAS: self.referent_daji,
+            convert_role_for_activity(PORTEUR_ALIAS): self.porteur,
         }
         result = {key: value for key, value in temp_data.items() if value}
         return result
 
     def to_organizations(self):
         """Convert structure_porteur & partenaire to activity's organizations"""
-        temp_data = {
-            STRUCTURE_PORTEUR_ALIAS: self.structure_porteur,
-            PARTENAIRE_ALIAS: self.partenaire,
-        }
+
+        temp_data = {}
         result = {key: value for key, value in temp_data.items() if value}
         return result
 
@@ -165,19 +160,47 @@ class Convention(BaseModel):
         """
         return self.sous_type
 
+    def to_financial_impact(self) -> FinancialImpactEnum:
+        """
+        Convert to FinancialImpactEnum based Recette/Dépense value.
+        """
+        recettes_len = len(self.recettes_convention)
+        depenses_len = len(self.depenses_convention)
+
+        if recettes_len == 0 and depenses_len == 0:
+            return FinancialImpactEnum.AUCUNE
+
+        if recettes_len > 0 and depenses_len > 0:
+            raise ValueError(
+                "Both recettes_convention and depenses_convention cannot have value simultaneously."
+            )
+        return (
+            FinancialImpactEnum.RECETTE
+            if recettes_len > 0
+            else FinancialImpactEnum.DEPENSE
+        )
+
     def to_amount(self) -> NonNegativeFloat:
         """
-        Converts montant's convention which has a clean format to amount.
+        Converts to amount if recettes has a value or depenses has a value.
         """
         try:
-            return NonNegativeFloat(self.montant_convention)
-        except ValueError:
-            logging.warning(
-                "Invalid float value %s for %s, amount equal 0 instead !",
+            amount = 0.0
+            for str_amount in (
+                self.recettes_convention,
+                self.depenses_convention,
                 self.montant_convention,
-                self.reference,
-            )
-            return 0
+            ):
+                if str_amount != "":
+                    amount += NonNegativeFloat(str_amount)
+            return amount
+        except ValueError as e:
+            raise ValueError(
+                f"Invalid float value montant: {self.montant_convention},"
+                f"recettes: {self.recettes_convention}"
+                f"depenses: {self.depenses_convention}"
+                f"for {self.reference}, amount equal 0 instead !",
+            ) from e
 
     def to_datestart(self) -> str:
         """Convert DateDemarrage to activity's datestart"""
@@ -189,4 +212,4 @@ class Convention(BaseModel):
 
     def to_milestones(self) -> list[Milestone]:
         """Convert Etape to activity's milestones"""
-        return [Milestone(type=self.etape)]
+        return []

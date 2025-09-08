@@ -17,6 +17,8 @@ from utils.aliases import (
     SOUS_TYPE_CONVENTION_ALIAS,
     DATE_DEMARRAGE_ALIAS,
     TERME_CONVENTION_ALIAS,
+    RECETTES_ALIAS,
+    DEPENSES_ALIAS,
 )
 
 
@@ -44,6 +46,8 @@ def transform_oscar_to_econvention(activities: list[dict]) -> str:
             | {SOUS_TYPE_CONVENTION_ALIAS: activity.to_convention_sous_type()}
             | {ORIGINE_CONVENTION_ALIAS: activity.to_convention_origin()}
             | {MONTANT_CONVENTION_ALIAS: activity.to_convention_montant()}
+            | {RECETTES_ALIAS: activity.to_convention_recettes()}
+            | {DEPENSES_ALIAS: activity.to_convention_depenses()}
             | {DATE_DEMARRAGE_ALIAS: activity.to_date_demarrage()}
             | {TERME_CONVENTION_ALIAS: activity.to_terme_convention()}
             | {"Etape": activity.to_etape()}

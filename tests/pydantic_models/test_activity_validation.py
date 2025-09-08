@@ -10,9 +10,7 @@ def test_persons_is_normalized(activity_expected_data):
     valid_raw_data = activity_expected_data[0]
     valid_activity_model = Activity.model_validate(valid_raw_data)
     assert valid_activity_model.persons == {
-        "Porteur": ["Carine Souveyet Jarosz"],
-        "ReferentDAJI": ["David Dubois-Penicaud"],
-        "ResponsablePorteur": ["Personnels:Roles:DIR UFR UFR 27"],
+        "Chargé(e) de valorisation": ["Carine Souveyet Jarosz"],
     }
 
     valid_raw_data["persons"] = {"Role": "Membre"}
@@ -33,10 +31,7 @@ def test_organizations_is_normalized(activity_expected_data):
     """Ensure it extracts organizations properly from dict"""
     valid_raw_data = activity_expected_data[0]
     valid_activity_model = Activity.model_validate(valid_raw_data)
-    assert valid_activity_model.organizations == {
-        "Partenaire": ["Association PIVOD"],
-        "StructurePorteur": ["UFR 27 : Mathématiques et informatique"],
-    }
+    assert valid_activity_model.organizations == {}
 
     valid_raw_data["organizations"] = {"Role": "Membre"}
     valid_activity_model = Activity.model_validate(valid_raw_data)
@@ -106,7 +101,7 @@ def test_milestones_is_normalized(activity_expected_data):
     valid_activity_model = Activity.model_validate(valid_raw_data)
     assert [
         model.model_dump(mode="json") for model in valid_activity_model.milestones
-    ] == [{"date": None, "description": "", "type": "100 - Dossier Complet"}]
+    ] == []
 
     valid_raw_data["milestones"] = [
         {
