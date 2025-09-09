@@ -236,17 +236,17 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y libpq-dev python3-dev build-essential python3-venv python3-pip git curl
 ```
 
+#### Clone project repository
+```bash
+git clone https://github.com/jdp1ps/oscar-econvention-sync.git
+cd oscar-econvention-sync
+```
+
 #### Create and activate Python virtual environment
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip setuptools wheel
-```
-
-#### Clone project repository
-```bash
-git clone https://github.com/jdp1ps/oscar-econvention-sync.git
-cd oscar-econvention-sync
 ```
 
 #### Install Python dependencies
