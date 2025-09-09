@@ -62,24 +62,6 @@ access_control_allow_headers = content-type
 access_control_allow_methods = POST,GET
 ```
 
-To authenticate, send a POST request to the /auth/token endpoint with your username and password:
-```bash
-curl -X POST http://localhost:8080/auth/token   -H "Content-Type: application/json"   -d '{
-    "username": <admin>,
-    "password": <password>
-  }'
-```
-Expected response and save this token to use in next API requests :
-```bash
-{"access_token":"<JWT access_token>"}
-```
-
-You can now use the retrieved token to interact with Airflow's public API.
-```bash
-curl -X GET http://localhost:8080/api/v2/dags \
-  -H "Authorization: Bearer <JWT access_token>"
-```
-
 ---
 
 ## Triggering the ETL pipeline via the Airflow Web UI
@@ -109,9 +91,8 @@ Once logged in :
       "Title": "Sample title",
       "Porteur": "Porteur",
       "Partenaire": "Partenaire",
-      "StructurePorteur": "Struct",
       "DateDemarrage": "29/08/2025 00:00",
-      "MontantConvention": "0",
+      "MontantConvention": "1 000,1",
       "TypeConvention": "Recherche",
       "SousType": "Appels à projets internes"
     }
@@ -141,14 +122,36 @@ Note: The same steps apply when configuring a Redis database connection.
 
 ## Triggering the ETL pipeline via curl
 
-Make sure the requirements from the previous two sections are met before proceeding with this step.
+Make sure the requirements from the previous section are met before proceeding with this step.
+
+To authenticate, send a POST request to the /auth/token endpoint with your username and password:
+```bash
+curl -X POST http://localhost:8080/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "<username>",
+    "password": "<password>"
+  }'
+```
+
+Expected response and save this token to use in next API requests :
+
+```bash
+{"access_token":"<JWT access_token>"}
+```
+
+You can now use the retrieved token to interact with Airflow's public API.
+```bash
+curl -X GET http://localhost:8080/api/v2/dags \
+  -H "Authorization: Bearer <JWT access_token>"
+```
 
 You can copy and paste the following POST request by replacing the logical date:
 
 ```bash
-curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns   
-  -H "Content-Type: application/json"   
-  -H "Authorization: Bearer <JWT access_token>
+curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <JWT access_token>" \
   -d '{
     "logical_date": "2025-08-01T00:00:00Z",
     "conf": {
@@ -158,9 +161,8 @@ curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns
         "Title": "Sample title",
         "Porteur": "Porteur",
         "Partenaire": "Partenaire",
-        "StructurePorteur": "Struct",
         "DateDemarrage":"29/08/2025 00:00",
-        "MontantConvention": "0",
+        "MontantConvention": "1 000,1",
         "TypeConvention": "Recherche",
         "SousType": "Appels à projets internes"
       }
@@ -168,7 +170,7 @@ curl -X POST http://localhost:8080/api/v2/dags/econvention_to_oscar/dagRuns
   }'
 ```
 
-If your POST request to trigger the ETL pipeline is queued, it may be because the DAG is currently paused.
+**Note:** If your POST request to trigger the ETL pipeline is queued, it may be because the DAG is currently paused.
 
 You can either enable the DAG via the Airflow Web UI or run this command in your terminal:
 ```bash

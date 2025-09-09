@@ -52,7 +52,7 @@ class Convention(BaseModel):
     reference: str = Field(alias=REFERENCE_ALIAS)
     titre: str = Field(alias=TITRE_ALIAS)
     porteur: str = Field(alias=PORTEUR_ALIAS)
-    structure_porteur: str = Field(alias=STRUCTURE_PORTEUR_ALIAS)
+    structure_porteur: str = Field(default="", alias=STRUCTURE_PORTEUR_ALIAS)
     responsable_porteur: str = Field(default="", alias=RESPONSABLE_PORTEUR_ALIAS)
     referent_daji: str = Field(default="", alias=REFERENT_DAJI_ALIAS)
 
