@@ -22,12 +22,13 @@ def transform_econvention_to_oscar(conventions: list[dict]) -> str:
             | {"label": convention.to_label()}
             | {"persons": convention.to_persons()}
             | {"organizations": convention.to_organizations()}
-            | {"description": convention.description or ""}
+            | {"description": convention.description}
+            | {"financialImpact": convention.to_financial_impact()}
             | {"amount": convention.to_amount()}
             | {"type": convention.to_activity_type()}
-            | {"datestart": convention.to_datestart() or None}
-            | {"dateend": convention.to_dateend() or None}
-            | {"milestones": convention.to_milestones() or []}
+            | {"datestart": convention.to_datestart()}
+            | {"dateend": convention.to_dateend()}
+            | {"milestones": convention.to_milestones()}
         )
         try:
             activity_list.append(Activity.model_validate(mapping))
@@ -37,7 +38,10 @@ def transform_econvention_to_oscar(conventions: list[dict]) -> str:
         raise ValueError(f"Some conventions failed mapping process: {errors}")
 
     results = json.dumps(
-        [activity.model_dump(by_alias=True) for activity in activity_list],
+        [
+            activity.model_dump(by_alias=True, exclude_none=True)
+            for activity in activity_list
+        ],
         sort_keys=True,
         indent=4,
     )

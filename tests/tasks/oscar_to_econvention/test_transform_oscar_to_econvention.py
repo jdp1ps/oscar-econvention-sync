@@ -28,22 +28,16 @@ TRANSFORM_TASK_NAME = (
                     "datesigned": None,
                     "datestart": "2024-01-09",
                     "description": "Description abrégée.",
-                    "financialImpact": "Aucune",
+                    "financialImpact": "Recette",
                     "label": "Convention MIAGE - Association PIVOD",
-                    "milestones": [
-                        {
-                            "date": None,
-                            "description": "",
-                            "type": "100 - Dossier Complet",
-                        }
-                    ],
+                    "milestones": [],
                     "organizations": {
                         "Partenaire": ["Association PIVOD"],
                         "StructurePorteur": ["UFR 27 : Mathématiques et informatique"],
                     },
                     "payments": [],
                     "persons": {
-                        "Porteur": ["Carine Souveyet Jarosz"],
+                        "Chargé(e) de valorisation": ["Carine Souveyet Jarosz"],
                         "ReferentDAJI": ["David Dubois-Penicaud"],
                         "ResponsablePorteur": ["Personnels:Roles:DIR UFR UFR 27"],
                     },
@@ -79,7 +73,9 @@ def test_transform_oscar_to_econvention(dag_with_parameter, unique_logical_date)
             "SousType": "ANR",
             "DateDemarrage": "01/09/2024 00:00",
             "TermeConvention": "01/09/2027 00:00",
-            "MontantConvention": "100.10",
+            "MontantConvention": "",
+            "Recettes": "100.10",
+            "Depenses": "",
             "Etape": "0 - Brouillon",
         }
     ]

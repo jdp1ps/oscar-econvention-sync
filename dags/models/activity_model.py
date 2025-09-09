@@ -1,4 +1,3 @@
-from enum import Enum
 from pydantic import (
     BaseModel,
     Field,
@@ -19,48 +18,14 @@ from utils.aliases import (
     RESPONSABLE_PORTEUR_ALIAS,
     REFERENT_DAJI_ALIAS,
     PARTENAIRE_ALIAS,
+    convert_role_for_activity,
 )
 from models.convention_model import OrigineEnum
 from models.submodels import (
     Payment,
     Milestone,
 )
-
-
-class FinancialImpactEnum(str, Enum):
-    """
-    3 possibles values for FinancialImpact
-    """
-
-    AUCUNE = "Aucune"
-    RECETTE = "Recette"
-    DEPENSE = "Dépense"
-
-
-class CurrencyEnum(str, Enum):
-    """
-    4 possible values for Currency
-    """
-
-    EURO = "Euro"
-    YENS = "Yens"
-    LIVRE = "Livre"
-    DOLLARS = "Dollars"
-
-
-class StatusEnum(int, Enum):
-    """
-    Possible values for Status
-    """
-
-    ACTIF = 101
-    BROUILLON = 102
-    DEPOSE = 103
-    TERMINE = 200
-    RESILIE = 201
-    ABANDONNE = 250
-    REFUSE = 201  # alias pour RESILIE
-    CONFLIT = 404  # Pas de statut
+from models.enum_models import CurrencyEnum, FinancialImpactEnum, StatusEnum
 
 
 class Activity(BaseModel):
@@ -86,7 +51,7 @@ class Activity(BaseModel):
     currency: CurrencyEnum = CurrencyEnum.EURO
     financialImpact: FinancialImpactEnum = FinancialImpactEnum.AUCUNE
     milestones: list[Milestone] = []
-    status: StatusEnum = StatusEnum.CONFLIT
+    status: StatusEnum = StatusEnum.ACTIF
     payments: list[Payment] = []
 
     @model_validator(mode="after")
@@ -149,7 +114,9 @@ class Activity(BaseModel):
 
     def to_porteur(self) -> str:
         """Convert part of persons to convention's porteur"""
-        return self.get_str_from_dict(PORTEUR_ALIAS, self.persons)
+        return self.get_str_from_dict(
+            convert_role_for_activity(PORTEUR_ALIAS), self.persons
+        )
 
     def to_responsable_porteur(self) -> str:
         """Convert part of persons to convention's responsable porteur"""
@@ -190,8 +157,28 @@ class Activity(BaseModel):
         return OrigineEnum.PARTENAIRE
 
     def to_convention_montant(self) -> str:
-        """Convert amount to convention's montant"""
-        return f"{self.amount:.2f}"
+        """Convert amount to convention's montant based on financial impact"""
+        return (
+            f"{self.amount:.2f}"
+            if self.financialImpact == FinancialImpactEnum.AUCUNE
+            else ""
+        )
+
+    def to_convention_recettes(self) -> str:
+        """Convert amount to convention's recettes based on financial impact"""
+        return (
+            f"{self.amount:.2f}"
+            if self.financialImpact == FinancialImpactEnum.RECETTE
+            else ""
+        )
+
+    def to_convention_depenses(self) -> str:
+        """Convert amount to convention's depenses based on financial impact"""
+        return (
+            f"{self.amount:.2f}"
+            if self.financialImpact == FinancialImpactEnum.DEPENSE
+            else ""
+        )
 
     def to_date_demarrage(self) -> str:
         """Convert datestart to convention's date_demarrage"""

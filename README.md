@@ -135,6 +135,7 @@ airflow connections add <connection_id_name> \
 
 Note: The Connection ID must exactly match the value of POSTGRES_CONN_ID defined in your project's .env file.
 
+Note: The same steps apply when configuring a Redis database connection.
 
 ---
 
@@ -235,17 +236,17 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y libpq-dev python3-dev build-essential python3-venv python3-pip git curl
 ```
 
+#### Clone project repository
+```bash
+git clone https://github.com/jdp1ps/oscar-econvention-sync.git
+cd oscar-econvention-sync
+```
+
 #### Create and activate Python virtual environment
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip setuptools wheel
-```
-
-#### Clone project repository
-```bash
-git clone https://github.com/jdp1ps/oscar-econvention-sync.git
-cd oscar-econvention-sync
 ```
 
 #### Install Python dependencies
@@ -325,3 +326,7 @@ Now you can run the tests:
 ```bash
 APP_ENV=TEST pytest
 ```
+
+#### Others
+
+Install Redis server in the VM for preproduction testing. See official guide: [Install Redis on Linux](https://redis.io/docs/latest/operate/oss_and_stack/install/archive/install-redis/install-redis-on-linux/)
