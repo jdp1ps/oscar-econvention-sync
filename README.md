@@ -76,6 +76,8 @@ cp .env.example .env
 ```
 Then edit .env to match your local environment paths.
 
+**Tip:** You can read `.env.test` to see example configurations.
+
 Access the Airflow UI at http://localhost:8080 and log in with credentials which were provided during the Airflow setup.
 
 Once logged in : 
@@ -275,13 +277,6 @@ cp .env.example .env
 nano .env
 ```
 *(adjust database credentials, API keys, etc.)*
-
-Configuration file specific for pytest
-```bash
-cp .env.example .env.test
-nano .env.test
-```
-*(adjust settings for the test environment)*
 
 #### Set Airflow home (temporary)
 ```bash
