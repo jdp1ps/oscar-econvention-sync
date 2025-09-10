@@ -16,15 +16,15 @@ from tasks.oscar_to_econvention.transform_oscar_to_econvention import (
 from tasks.oscar_to_econvention.redis_confirm_migrated_conventions import (
     redis_confirm_migrated_conventions,
 )
-from tasks.oscar_to_econvention.create_import_json_to_econvention import (
-    create_import_json_to_econvention
+from tasks.oscar_to_econvention.update_json_for_econvention import (
+    update_json_for_econvention,
 )
 
 # pylint: disable=unexpected-keyword-arg
 with DAG(
     dag_id="oscar_to_econvention",
     start_date=datetime(2025, 7, 30),
-    schedule="*/10 * * * *",  # “At every 10th minute.”
+    schedule="0 * * * *",  # “At minute 0.”
     catchup=False,
     tags=["api", "json", "etl", "post"],
 ) as oscar_to_econvention:
@@ -35,5 +35,9 @@ with DAG(
     raw_activities = pg_extract_migratable_activities()
     extracted_activities = redis_validate_activities(raw_activities)
     transformed_conventions = transform_oscar_to_econvention(extracted_activities)
-    redis_confirm_migrated_conventions(transformed_conventions)
-    create_import_json_to_econvention(transformed_conventions)
+    json_path = update_json_for_econvention(transformed_conventions)
+    confirmed_number = redis_confirm_migrated_conventions(transformed_conventions)
+
+    # pylint: disable=pointless-statement
+    activity_types_csv_path >> raw_activities
+    json_path >> confirmed_number

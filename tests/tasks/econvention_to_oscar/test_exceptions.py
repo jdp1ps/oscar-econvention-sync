@@ -10,8 +10,7 @@ from tests.utils.dag import (
 
 TRANSFORM_TASK_ID = "transform_econvention_to_oscar"
 TRANSFORM_TASK_NAME = (
-    "dags.tasks.econvention_to_oscar.transform_econvention_to_oscar."
-    + TRANSFORM_TASK_ID
+    "dags.tasks.econvention_to_oscar." + TRANSFORM_TASK_ID + "." + TRANSFORM_TASK_ID
 )
 CREATE_JSON_TO_OSCAR_TASK_ID = "create_import_json_to_oscar"
 CREATE_JSON_TO_OSCAR_TASK_NAME = (

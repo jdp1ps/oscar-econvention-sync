@@ -8,8 +8,7 @@ from tests.utils.dag import (
 
 TRANSFORM_TASK_ID = "transform_oscar_to_econvention"
 TRANSFORM_TASK_NAME = (
-    "dags.tasks.oscar_to_econvention.transform_oscar_to_econvention."
-    + TRANSFORM_TASK_ID
+    "dags.tasks.oscar_to_econvention." + TRANSFORM_TASK_ID + "." + TRANSFORM_TASK_ID
 )
 
 
