@@ -147,14 +147,14 @@ class Convention(BaseModel):
         result = {key: value for key, value in temp_data.items() if value}
         return result
 
-    def to_organizations(self):
+    def to_organizations(self) -> dict:
         """Convert structure_porteur & partenaire to activity's organizations"""
 
         temp_data = {}
         result = {key: value for key, value in temp_data.items() if value}
         return result
 
-    def to_activity_type(self):
+    def to_activity_type(self) ->str:
         """
         Converts type to activity's type.
         """

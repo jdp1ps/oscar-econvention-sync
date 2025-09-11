@@ -66,7 +66,7 @@ class Activity(BaseModel):
         )
         return activity
 
-    @field_validator("persons", "organizations")
+    @field_validator("persons", "organizations", mode="after")
     @classmethod
     def check_dict_format(cls, v):
         """

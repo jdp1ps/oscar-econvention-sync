@@ -89,6 +89,10 @@ def test_amount_is_normalized(activity_expected_data):
     valid_convention_bis = Activity.model_validate(valid_raw_data)
     assert valid_convention_bis.amount == 666.6
 
+    valid_raw_data["amount"] = 0.0
+    valid_convention_bis = Activity.model_validate(valid_raw_data)
+    assert valid_convention_bis.amount == 0.0
+
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["amount"] = -666.6
     with pytest.raises(ValidationError):

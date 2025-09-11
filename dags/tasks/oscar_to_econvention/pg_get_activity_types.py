@@ -4,8 +4,8 @@ from utils.config import POSTGRES_CONN_ID
 
 
 @task
-def pg_extract_activity_types():
-    """[TEMPORARY] Extract activity types from Postgres table"""
+def pg_extract_activity_types() -> list:
+    """Extract activity types from Postgres table"""
     activity_types = []
     hook = PostgresHook(postgres_conn_id=POSTGRES_CONN_ID)
     conn = hook.get_conn()

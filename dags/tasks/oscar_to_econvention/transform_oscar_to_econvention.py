@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from models.activity_model import Activity
 from models.convention_model import Convention
 from utils.aliases import (
+    REFERENCE_ALIAS,
     TITRE_ALIAS,
     PORTEUR_ALIAS,
     STRUCTURE_PORTEUR_ALIAS,
@@ -19,6 +20,7 @@ from utils.aliases import (
     TERME_CONVENTION_ALIAS,
     RECETTES_ALIAS,
     DEPENSES_ALIAS,
+    ETAPE_ALIAS
 )
 
 
@@ -34,7 +36,7 @@ def transform_oscar_to_econvention(activities: list[dict]) -> str:
 
     for i, activity in enumerate(activity_list):
         mapping = (
-            {"Reference": activity.to_reference()}
+            {REFERENCE_ALIAS: activity.to_reference()}
             | {TITRE_ALIAS: activity.to_titre()}
             | {PORTEUR_ALIAS: activity.to_porteur()}
             | {STRUCTURE_PORTEUR_ALIAS: activity.to_structure()}
@@ -50,7 +52,7 @@ def transform_oscar_to_econvention(activities: list[dict]) -> str:
             | {DEPENSES_ALIAS: activity.to_convention_depenses()}
             | {DATE_DEMARRAGE_ALIAS: activity.to_date_demarrage()}
             | {TERME_CONVENTION_ALIAS: activity.to_terme_convention()}
-            | {"Etape": activity.to_etape()}
+            | {ETAPE_ALIAS: activity.to_etape()}
         )
 
         try:
