@@ -2,6 +2,8 @@ import csv
 import re
 from enum import Enum
 import unicodedata
+from pathlib import Path
+import logging
 
 from utils.config import (
     CONVENTION_TYPE_CSV_FILE_PATH,
@@ -11,6 +13,9 @@ from utils.config import (
     TYPE_PARENT_VALUE,
     VALUE_COLUMN_NAME,
 )
+
+logger = logging.getLogger(__name__)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 def ensure_list_of_dict(raw_data: list[dict]) -> list[dict]:
@@ -55,11 +60,19 @@ def csv_column_to_list(
         list[str]: List of non-empty strings from the column.
     """
     values = []
-    with open(csv_path, mode="r", encoding="utf-8") as f:
+    try:
+        f = open(csv_path, mode="r", encoding="utf-8")
+    except FileNotFoundError:
+        alt_path = PROJECT_ROOT / csv_path
+        logger.warning(
+            "CSV file not found at %s, trying alternative path %s", csv_path, alt_path
+        )
+        f = open(alt_path, mode="r", encoding="utf-8")
+
+    with f:
         reader = csv.reader(f, delimiter=",")
         if use_header:
             next(reader, None)
-
         for row in reader:
             if len(row) <= value_column_index:
                 continue
@@ -91,7 +104,16 @@ def extract_column_by_filter(
         List of strings from extract_column matching the filter.
     """
     results = []
-    with open(csv_path, mode="r", encoding="utf-8") as f:
+    try:
+        f = open(csv_path, mode="r", encoding="utf-8")
+    except FileNotFoundError:
+        alt_path = PROJECT_ROOT / csv_path
+        logger.warning(
+            "CSV file not found at %s, trying alternative path %s", csv_path, alt_path
+        )
+        f = open(alt_path, mode="r", encoding="utf-8")
+
+    with f:
         reader = csv.DictReader(f, delimiter=delimiter)
         for row in reader:
             if row.get(filter_column) == filter_value:
