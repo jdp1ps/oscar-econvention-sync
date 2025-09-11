@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 # Load .env.test from the project root (two levels up from this file)
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-dotenv_path = os.path.join(ROOT_DIR, ".env.test")
+dotenv_path = os.path.join(ROOT_DIR, ".env")
 load_dotenv(dotenv_path)
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,12 @@ FALLBACK_OUTPUT_DIR = get_env_var("FALLBACK_OUTPUT_DIR")
 # ECONVENTION TO OSCAR CONFIGURATIONS :
 ECONVENTION_TO_OSCAR_OUTPUT_DIR = get_env_var("ECONVENTION_TO_OSCAR_OUTPUT_DIR")
 
-OSCAR_HOME_PATH = get_env_var("OSCAR_HOME")
+REMOTE_OSCAR_HOME_PATH = get_env_var("REMOTE_OSCAR_HOME")
+REMOTE_OSCAR_OUTPUT_DIR = get_env_var("REMOTE_OSCAR_OUTPUT_DIR")
+
+SSH_KEY_PATH = get_env_var("SSH_KEY_PATH")
+SSH_USER = get_env_var("SSH_USER")
+SSH_HOST = get_env_var("SSH_HOST")
 
 # OSCAR TO ECONVENTION CONFIGURATIONS :
 OSCAR_TO_ECONVENTION_OUTPUT_DIR = get_env_var("OSCAR_TO_ECONVENTION_OUTPUT_DIR")

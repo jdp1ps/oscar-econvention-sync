@@ -146,7 +146,9 @@ def test_import_json_file_with_fallback(
     ti = create_task_instance(dag_with_parameter, dag_run, CREATE_JSON_TO_OSCAR_TASK_ID)
     assert ti.state == TaskInstanceState.SUCCESS
 
-    file_path = Path(ti.xcom_pull(task_ids=CREATE_JSON_TO_OSCAR_TASK_ID))
+    result = ti.xcom_pull(task_ids=CREATE_JSON_TO_OSCAR_TASK_ID)
+
+    file_path = Path(result["local_path"])
     assert file_path.exists()
     assert file_path.parent.exists()
 

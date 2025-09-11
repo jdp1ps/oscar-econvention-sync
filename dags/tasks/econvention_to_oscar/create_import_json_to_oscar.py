@@ -6,7 +6,7 @@ from utils.file_utils import create_in_fallback_dir
 
 
 @task
-def create_import_json_to_oscar(data: str, **context) -> list[dict]:
+def create_import_json_to_oscar(data: str, **context) -> dict[str]:
     """
     Create a JSON file in ECONVENTION_TO_OSCAR_OUTPUT_DIR
     with a unique name based on logical date
@@ -32,10 +32,13 @@ def create_import_json_to_oscar(data: str, **context) -> list[dict]:
         )
         with open(import_json_path, "w", encoding="utf-8") as f:
             f.write(data)
-        return import_json_path
+        return {"local_path": import_json_path, "filename": output_filename}
 
     except (PermissionError, FileNotFoundError):
-        return create_in_fallback_dir(data, output_filename)
+        return {
+            "local_path": create_in_fallback_dir(data, output_filename),
+            "filename": output_filename,
+        }
 
     except Exception as e:
         raise RuntimeError("Unhandled exception while writing file") from e

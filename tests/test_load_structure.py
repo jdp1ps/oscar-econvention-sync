@@ -18,7 +18,7 @@ def test_dag_structure(econvention_to_oscar_dag):
     expected_structure = {
         "receive_from_econvention": ["transform_econvention_to_oscar"],
         "transform_econvention_to_oscar": ["create_import_json_to_oscar"],
-        "create_import_json_to_oscar": ["load_to_oscar"],
-        "load_to_oscar": [],  # END
+        "create_import_json_to_oscar": ["transfer_and_import"],
+        "transfer_and_import": [],  # END
     }
     assert_dag_dict_equal(expected_structure, econvention_to_oscar_dag)

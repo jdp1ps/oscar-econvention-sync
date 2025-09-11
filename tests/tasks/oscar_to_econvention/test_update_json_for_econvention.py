@@ -1,6 +1,6 @@
 import json
-import pendulum
 from pathlib import Path
+import pendulum
 import pytest
 from airflow.utils.state import TaskInstanceState
 from tests.utils.dag import (
@@ -58,7 +58,7 @@ def test_import_json_file(dag_with_parameter):
     assert new_file_path.exists()
     assert new_file_path == initial_file_path
 
-    with open(new_file_path, "r") as file:
+    with open(new_file_path, "r",encoding="utf-8") as file:
         data = json.load(file)
 
     # Cleanup to avoid polluting ECONVENTION_TO_OSCAR_OUTPUT_DIR
