@@ -26,7 +26,7 @@ with DAG(
     start_date=datetime(2025, 7, 30),
     schedule="0 * * * *",  # “At minute 0.”
     catchup=False,
-    tags=["api", "json", "etl", "post"],
+    tags=["api", "json", "etl", "get","oscar_to_econvention"],
 ) as oscar_to_econvention:
     # Activity type's workflow
     activity_type_list = pg_extract_activity_types()

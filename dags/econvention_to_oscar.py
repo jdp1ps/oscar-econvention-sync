@@ -17,7 +17,7 @@ with DAG(
     start_date=datetime(2025, 7, 30),
     schedule=None,
     catchup=False,
-    tags=["api", "json", "etl", "post"],
+    tags=["api", "json", "etl", "post","econvention_to_oscar"],
 ) as econvention_to_oscar:
 
     raw_data = receive_from_econvention()
