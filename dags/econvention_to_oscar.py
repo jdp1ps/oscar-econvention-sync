@@ -1,3 +1,4 @@
+import shlex
 from datetime import datetime
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
@@ -23,6 +24,7 @@ with DAG(
     start_date=datetime(2025, 7, 30),
     schedule=None,
     catchup=False,
+    user_defined_macros={'shlex': shlex},
     tags=["api", "json", "etl", "post", "econvention_to_oscar"],
 ) as econvention_to_oscar:
 
@@ -34,14 +36,15 @@ with DAG(
         dag=econvention_to_oscar,
         task_id="transfer_and_import",
         bash_command=(
+            "echo {{ shlex.quote(ti.xcom_pull(task_ids='transform_econvention_to_oscar')) }} "
+            f"| ssh -i {SSH_KEY_PATH} {SSH_USER}@{SSH_HOST} "
+            f"'cat > {REMOTE_OSCAR_OUTPUT_DIR}/"
+            f"{{{{ ti.xcom_pull(task_ids='create_import_json_to_oscar')['filename'] }}}}' && "
+
             f"ssh -i {SSH_KEY_PATH} {SSH_USER}@{SSH_HOST} "
-            f'"cat > {REMOTE_OSCAR_OUTPUT_DIR}/'
-            f"{{{{ ti.xcom_pull(task_ids='create_import_json_to_oscar')['filename'] }}}}\" "
-            f"< {{{{ ti.xcom_pull(task_ids='create_import_json_to_oscar')['local_path'] }}}} && "
-            f"ssh -i {SSH_KEY_PATH} {SSH_USER}@{SSH_HOST} "
-            f'"php {REMOTE_OSCAR_HOME_PATH}/bin/oscar.php activity:import-json '
+            f"'php {REMOTE_OSCAR_HOME_PATH}/bin/oscar.php activity:import-json "
             f"-f {REMOTE_OSCAR_OUTPUT_DIR}/"
-            f"{{{{ ti.xcom_pull(task_ids='create_import_json_to_oscar')['filename'] }}}}\""
+            f"{{{{ ti.xcom_pull(task_ids='create_import_json_to_oscar')['filename'] }}}}'"
         ),
     )
     # pylint: disable=pointless-statement
