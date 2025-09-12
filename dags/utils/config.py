@@ -10,7 +10,7 @@ load_dotenv(dotenv_path)
 logger = logging.getLogger(__name__)
 
 # Search for generic and environment-specific .env.$APP_ENV files
-APP_ENV = os.getenv("APP_ENV","TEST")
+APP_ENV = os.getenv("APP_ENV","DEV")
 for suffix in ["", f".{APP_ENV.lower()}"]:
     env_file_name = os.path.join(ROOT_DIR, f".env{suffix}")
     if not os.path.exists(env_file_name):
