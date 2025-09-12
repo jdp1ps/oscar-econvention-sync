@@ -4,15 +4,15 @@ from dotenv import load_dotenv
 
 # Load .env.test from the project root (two levels up from this file)
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
-dotenv_path = os.path.join(ROOT_DIR, ".env")
+dotenv_path = os.path.join(ROOT_DIR, ".env.test")
 load_dotenv(dotenv_path)
 
 logger = logging.getLogger(__name__)
 
-# Search for generic and environment-specific .env.test files
-APP_ENV = os.getenv("APP_ENV", "TEST")
+# Search for generic and environment-specific .env.$APP_ENV files
+APP_ENV = os.getenv("APP_ENV","TEST")
 for suffix in ["", f".{APP_ENV.lower()}"]:
-    env_file_name = os.path.join(ROOT_DIR, f".env.{suffix}")
+    env_file_name = os.path.join(ROOT_DIR, f".env{suffix}")
     if not os.path.exists(env_file_name):
         logger.warning("%s env file not found", env_file_name)
     else:
