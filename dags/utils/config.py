@@ -9,6 +9,15 @@ load_dotenv(dotenv_path)
 
 logger = logging.getLogger(__name__)
 
+# Search for generic and environment-specific .env.test files
+APP_ENV = os.getenv("APP_ENV", "TEST")
+for suffix in ["", f".{APP_ENV.lower()}"]:
+    env_file_name = os.path.join(ROOT_DIR, f".env.{suffix}")
+    if not os.path.exists(env_file_name):
+        logger.warning("%s env file not found", env_file_name)
+    else:
+        load_dotenv(env_file_name, verbose=True)
+
 
 def get_env_var(key: str) -> str:
     """
