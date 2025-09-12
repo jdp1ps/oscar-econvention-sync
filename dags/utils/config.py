@@ -9,15 +9,6 @@ load_dotenv(dotenv_path)
 
 logger = logging.getLogger(__name__)
 
-# Search for generic and environment-specific .env.test files
-APP_ENV = os.getenv("APP_ENV", "DEV")
-for suffix in ["", f".{APP_ENV.lower()}"]:
-    env_file_name = os.path.join(ROOT_DIR, f".env.test{suffix}")
-    if not os.path.exists(env_file_name):
-        logger.warning("%s env file not found", env_file_name)
-    else:
-        load_dotenv(env_file_name, verbose=True)
-
 
 def get_env_var(key: str) -> str:
     """
@@ -30,12 +21,11 @@ def get_env_var(key: str) -> str:
 
 
 # GENERAL CONFIGURATIONS :
-FALLBACK_OUTPUT_DIR = get_env_var("FALLBACK_OUTPUT_DIR")
 
 # ECONVENTION TO OSCAR CONFIGURATIONS :
 ECONVENTION_TO_OSCAR_OUTPUT_DIR = get_env_var("ECONVENTION_TO_OSCAR_OUTPUT_DIR")
 
-REMOTE_OSCAR_HOME_PATH = get_env_var("REMOTE_OSCAR_HOME")
+OSCAR_CLI_WORKING_DIRECTORY = get_env_var("OSCAR_CLI_WORKING_DIRECTORY")
 REMOTE_OSCAR_OUTPUT_DIR = get_env_var("REMOTE_OSCAR_OUTPUT_DIR")
 
 SSH_KEY_PATH = get_env_var("SSH_KEY_PATH")

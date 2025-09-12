@@ -3,7 +3,6 @@ import json
 import pathlib
 from airflow.decorators import task
 from utils.config import OSCAR_TO_ECONVENTION_OUTPUT_DIR
-from utils.file_utils import create_in_fallback_dir
 from utils.type_utils import ensure_list_of_dict
 
 
@@ -15,7 +14,6 @@ def update_json_for_econvention(data: str, **context) -> str | None:
     and always contains a list of dictionaries.
     - If the file exists, new data is appended.
     - If not, a new file is created with the data.
-    - If writing fails, the file is created in FALLBACK_OUTPUT_DIR instead.
 
     Args:
         data (str): JSON string representing a list of dicts.
@@ -48,9 +46,6 @@ def update_json_for_econvention(data: str, **context) -> str | None:
             with open(import_json_path, "w", encoding="utf-8") as f:
                 f.write(json.dumps(updated_data))
             return str(import_json_path)
-
-        except (PermissionError, FileNotFoundError):
-            return create_in_fallback_dir(updated_data, output_filename)
 
         except Exception as e:
             raise RuntimeError("Unhandled exception while writing file") from e

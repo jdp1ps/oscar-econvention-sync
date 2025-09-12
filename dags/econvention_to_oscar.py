@@ -10,7 +10,7 @@ from tasks.econvention_to_oscar.create_import_json_to_oscar import (
     create_import_json_to_oscar,
 )
 from utils.config import (
-    REMOTE_OSCAR_HOME_PATH,
+    OSCAR_CLI_WORKING_DIRECTORY,
     REMOTE_OSCAR_OUTPUT_DIR,
     SSH_KEY_PATH,
     SSH_HOST,
@@ -42,7 +42,7 @@ with DAG(
             f"{{{{ ti.xcom_pull(task_ids='create_import_json_to_oscar')['filename'] }}}}' && "
 
             f"ssh -i {SSH_KEY_PATH} {SSH_USER}@{SSH_HOST} "
-            f"'php {REMOTE_OSCAR_HOME_PATH}/bin/oscar.php activity:import-json "
+            f"'php {OSCAR_CLI_WORKING_DIRECTORY}/bin/oscar.php activity:import-json "
             f"-f {REMOTE_OSCAR_OUTPUT_DIR}/"
             f"{{{{ ti.xcom_pull(task_ids='create_import_json_to_oscar')['filename'] }}}}'"
         ),
