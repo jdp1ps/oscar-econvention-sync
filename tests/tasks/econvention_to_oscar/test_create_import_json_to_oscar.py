@@ -7,9 +7,12 @@ from tests.utils.dag import (
     create_task_instance,
 )
 
+CREATE_JSON_TO_OSCAR_TASK_ID = "create_import_json_to_oscar"
 CREATE_JSON_TO_OSCAR_TASK_NAME = (
-    "dags.tasks.econvention_to_oscar.create_import_json_to_oscar"
-    ".create_import_json_to_oscar"
+    "dags.tasks.econvention_to_oscar."
+    + CREATE_JSON_TO_OSCAR_TASK_ID
+    + "."
+    + CREATE_JSON_TO_OSCAR_TASK_ID
 )
 
 
@@ -65,12 +68,11 @@ def test_import_json_file(dag_with_parameter, unique_logical_date):
         dag=dag_with_parameter,
         logical_date=unique_logical_date,
     )
-    ti = create_task_instance(
-        dag_with_parameter, dag_run, "create_import_json_to_oscar"
-    )
+    ti = create_task_instance(dag_with_parameter, dag_run, CREATE_JSON_TO_OSCAR_TASK_ID)
     assert ti.state == TaskInstanceState.SUCCESS
 
-    file_path = Path(ti.xcom_pull(task_ids="create_import_json_to_oscar"))
+    result = ti.xcom_pull(task_ids=CREATE_JSON_TO_OSCAR_TASK_ID)
+    file_path = Path(result["local_path"])
     assert file_path.exists()
 
     # Cleanup to avoid polluting ECONVENTION_TO_OSCAR_OUTPUT_DIR

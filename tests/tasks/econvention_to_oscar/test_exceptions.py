@@ -2,20 +2,20 @@ import json
 from pathlib import Path
 import pytest
 from airflow.utils.state import TaskInstanceState
-from dags.utils.config import FALLBACK_OUTPUT_DIR
+from dags.models.convention_model import TITRE_ALIAS
 from tests.utils.dag import (
     create_dag_run,
     create_task_instance,
 )
 
-
+TRANSFORM_TASK_ID = "transform_econvention_to_oscar"
 TRANSFORM_TASK_NAME = (
-    "dags.tasks.econvention_to_oscar.transform_econvention_to_oscar"
-    ".transform_econvention_to_oscar"
+    "dags.tasks.econvention_to_oscar." + TRANSFORM_TASK_ID + "." + TRANSFORM_TASK_ID
 )
+CREATE_JSON_TO_OSCAR_TASK_ID = "create_import_json_to_oscar"
 CREATE_JSON_TO_OSCAR_TASK_NAME = (
-    "dags.tasks.econvention_to_oscar.create_import_json_to_oscar"
-    ".create_import_json_to_oscar"
+    "dags.tasks.econvention_to_oscar.create_import_json_to_oscar."
+    + CREATE_JSON_TO_OSCAR_TASK_ID
 )
 IMPOSTOR_VALUE = 18052018
 
@@ -33,7 +33,7 @@ def test_exceptions_receive(
     and modify the extracted JSON data used in the Airflow DAG pipeline.
     """
     invalid_data = convention_raw_data
-    invalid_data[0]["Titre"] = IMPOSTOR_VALUE
+    invalid_data[0][TITRE_ALIAS] = IMPOSTOR_VALUE
     dag_run = create_dag_run(
         dag=econvention_to_oscar_dag,
         logical_date=unique_logical_date,
@@ -88,71 +88,4 @@ def test_transform_econvention_to_oscar(dag_with_parameter, unique_logical_date)
         logical_date=unique_logical_date,
     )
     with pytest.raises(ValueError):
-        create_task_instance(
-            dag_with_parameter, dag_run, "transform_econvention_to_oscar"
-        )
-
-
-@pytest.mark.parametrize(
-    "dag_with_parameter",
-    [
-        {
-            "task_name": CREATE_JSON_TO_OSCAR_TASK_NAME,
-            "param": json.dumps(
-                [
-                    {
-                        "uid": "test_exception",
-                        "acronym": "exc",
-                        "projectlabel": "projet exceptionnel",
-                        "label": "label exceptionnel",
-                        "financialImpact": "Aucune",
-                        "type": "",
-                        "currency": "Euro",
-                        "organizations": {
-                            "Structure Porteur": ["Structure d'exception !"],
-                        },
-                        "persons": {
-                            "Porteur": ["Porteur exceptionnel"],
-                        },
-                        "description": """
-                            Ce fichier a été exceptionnel écrit pour montrer
-                            à quel point ce fichier est exceptionnel en supportant
-                            l'exception PermissionError ou FileNotFound.
-                        """,
-                        "milestones": [],
-                        "status": 404,
-                        "tva": None,
-                        "payments": [],
-                    }
-                ]
-            ),
-        }
-    ],
-    indirect=True,
-)
-def test_import_json_file_with_fallback(
-    dag_with_parameter, unique_logical_date, monkeypatch
-):
-    """
-    Test the `import_json` function verifies if the file is created correctly
-    in FALLBACK_OUTPUT_DIR when ECONVENTION_TO_OSCAR_OUTPUT_DIR is invalid temporary.
-    """
-
-    # Force an invalid/unwritable directory for the main output
-    monkeypatch.setenv("ECONVENTION_TO_OSCAR_OUTPUT_DIR", "/root/invalid_dir")
-
-    dag_run = create_dag_run(
-        dag=dag_with_parameter,
-        logical_date=unique_logical_date,
-    )
-    ti = create_task_instance(
-        dag_with_parameter, dag_run, "create_import_json_to_oscar"
-    )
-    assert ti.state == TaskInstanceState.SUCCESS
-
-    file_path = Path(ti.xcom_pull(task_ids="create_import_json_to_oscar"))
-    assert file_path.exists()
-    assert file_path.parent.exists()
-
-    # Cleanup to avoid polluting FALLBACK_OUTPUT_DIR
-    file_path.unlink()
+        create_task_instance(dag_with_parameter, dag_run, TRANSFORM_TASK_ID)

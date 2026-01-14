@@ -1,6 +1,7 @@
 from airflow.decorators import task
 from pydantic import ValidationError
 from models.convention_model import Convention
+from utils.type_utils import ensure_list_of_dict
 
 
 @task
@@ -11,13 +12,7 @@ def receive_from_econvention(**context) -> list[dict]:
     :param context: given automatically by Airflow which contains API payload
     :return: list of econvention instances formatted into JSON string.
     """
-    raw_conventions = context["dag_run"].conf.get("items")
-    if raw_conventions is None:
-        raise ValueError("Missing 'items' key in dag_run.conf.")
-    if not isinstance(raw_conventions, list):
-        raise ValueError("Expected 'items' to be a list of dictionaries.")
-    if not all(isinstance(item, dict) for item in raw_conventions):
-        raise ValueError("All items in 'items' must be dictionaries.")
+    raw_conventions = ensure_list_of_dict(context["dag_run"].conf.get("items"))
 
     convention_list: list[Convention] = []
     errors = []

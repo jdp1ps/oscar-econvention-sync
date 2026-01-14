@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 from airflow.utils.state import TaskInstanceState
 from tests.utils.dag import (
     create_dag_run,
@@ -20,14 +19,6 @@ def test_receive_to_transform(
     Note:
     This test uses static sample data located in `/tests/data/` to ensure repeatability.
     """
-    date_iso = str(datetime.now().date().isoformat())
-
-    # update dynamically any attributes that require ISO date
-    for item in activity_expected_data:
-        if "acronym" in item:
-            item["acronym"] = date_iso
-        if "projectlabel" in item:
-            item["projectlabel"] = date_iso
 
     dag_run = create_dag_run(
         dag=econvention_to_oscar_dag,

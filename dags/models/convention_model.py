@@ -1,25 +1,43 @@
-from enum import Enum
-from pydantic import BaseModel, Field, ConfigDict, model_validator, field_validator
-from utils.iso_date import DATE_PATTERN, to_iso_date, ensure_start_before_end
-from models.activity_model import Milestone
-
-
-class OrigineEnum(str, Enum):
-    """
-    The convention is originated from intern or partner
-    """
-
-    INTERNE = "Interne"
-    PARTENAIRE = "Partenaire"
-
-
-class TypeEnum(str, Enum):
-    """
-    The convention is originated from intern or partner
-    """
-
-    PEDAGOGIE = "Pédagogie"
-    RECHERCHE = "Recherche"
+from pydantic import (
+    BaseModel,
+    Field,
+    ConfigDict,
+    model_validator,
+    field_validator,
+    NonNegativeFloat,
+)
+from utils.type_utils import (
+    CONVENTION_TYPE_ENUM,
+    CONVENTION_SOUS_TYPE_ENUM,
+)
+from utils.date_utils import (
+    CONVENTION_DATE_PATTERN,
+    to_activity_date_format,
+    ensure_start_before_end,
+    to_convention_date_format,
+)
+from utils.aliases import (
+    REFERENCE_ALIAS,
+    TITRE_ALIAS,
+    PORTEUR_ALIAS,
+    STRUCTURE_PORTEUR_ALIAS,
+    RESPONSABLE_PORTEUR_ALIAS,
+    REFERENT_DAJI_ALIAS,
+    PARTENAIRE_ALIAS,
+    DESCRIPTION_ALIAS,
+    ORIGINE_CONVENTION_ALIAS,
+    MONTANT_CONVENTION_ALIAS,
+    TYPE_CONVENTION_ALIAS,
+    SOUS_TYPE_CONVENTION_ALIAS,
+    DATE_DEMARRAGE_ALIAS,
+    TERME_CONVENTION_ALIAS,
+    ETAPE_ALIAS,
+    RECETTES_ALIAS,
+    DEPENSES_ALIAS,
+    convert_role_for_activity,
+)
+from models.submodels import Milestone
+from models.enum_models import FinancialImpactEnum, OrigineEnum
 
 
 class Convention(BaseModel):
@@ -31,28 +49,35 @@ class Convention(BaseModel):
         validate_by_name=True, validate_by_alias=True, frozen=True
     )
 
-    reference: str = Field(alias="Reference")
-    titre: str = Field(alias="Titre")
-    porteur: str = Field(alias="Porteur")
-    createur: str = Field(alias="Créateur")
-    partenaire: list[str] = Field(default=[], alias="Partenaire")
-    structure_porteur: str = Field(
-        validation_alias="Sticture Porteur", serialization_alias="Structure Porteur"
-    )
-    description: str = Field(default="", alias="Description")
+    reference: str = Field(alias=REFERENCE_ALIAS)
+    titre: str = Field(alias=TITRE_ALIAS)
+    porteur: str = Field(alias=PORTEUR_ALIAS)
+    structure_porteur: str = Field(default="", alias=STRUCTURE_PORTEUR_ALIAS)
+    responsable_porteur: str = Field(default="", alias=RESPONSABLE_PORTEUR_ALIAS)
+    referent_daji: str = Field(default="", alias=REFERENT_DAJI_ALIAS)
+
+    partenaire: str = Field(default="", alias=PARTENAIRE_ALIAS)
+
+    description: str = Field(default="", alias=DESCRIPTION_ALIAS)
     origine_de_la_convention: OrigineEnum | None = Field(
-        default=None, alias="Origine de la convention"
+        default=None, alias=ORIGINE_CONVENTION_ALIAS
     )
-    type_de_la_convention: TypeEnum | None = Field(
-        default=None, alias="Type de la convention"
+    montant_convention: str = Field(default="", alias=MONTANT_CONVENTION_ALIAS)
+    recettes_convention: str = Field(default="", alias=RECETTES_ALIAS)
+    depenses_convention: str = Field(default="", alias=DEPENSES_ALIAS)
+    type_convention: CONVENTION_TYPE_ENUM | None = Field(
+        default=None, alias=TYPE_CONVENTION_ALIAS
+    )
+    sous_type: CONVENTION_SOUS_TYPE_ENUM | None = Field(
+        default=None, alias=SOUS_TYPE_CONVENTION_ALIAS
     )
     date_demarrage: str | None = Field(
-        default=None, alias="DateDemarrage", pattern=DATE_PATTERN
+        default=None, alias=DATE_DEMARRAGE_ALIAS, pattern=CONVENTION_DATE_PATTERN
     )
     terme_convention: str | None = Field(
-        default=None, alias="TermeConvention", pattern=DATE_PATTERN
+        default=None, alias=TERME_CONVENTION_ALIAS, pattern=CONVENTION_DATE_PATTERN
     )
-    etape: list[dict] = Field(default=[], alias="Etape")
+    etape: str = Field(default="", alias=ETAPE_ALIAS)
 
     @model_validator(mode="after")
     @classmethod
@@ -66,83 +91,125 @@ class Convention(BaseModel):
         )
         return convention
 
-    @field_validator("origine_de_la_convention", mode="before")
-    @classmethod
-    def normalize_origine(cls, origin: dict | str) -> str:
-        """
-        Ensure Origine de la convention is always str
-        """
-        if isinstance(origin, dict):
-            return origin.get("Value")
-        return origin
-
-    @field_validator("createur", mode="before")
-    @classmethod
-    def normalize_createur(cls, creator: dict | str) -> str:
-        """
-        Ensure Créateur is always a str.
-        """
-        if isinstance(creator, dict):
-            return creator.get("DisplayName")
-        return creator
-
-    @field_validator("partenaire", mode="before")
-    @classmethod
-    def normalize_partenaire(cls, partners: list[dict]) -> list[str]:
-        """
-        Ensure Partenaire is always a list[str] of DisplayNames.
-        """
-        if isinstance(partners, list):
-            return [
-                item.get("DisplayName") if isinstance(item, dict) else str(item)
-                for item in partners
-            ]
-        return partners or []
-
     @field_validator("date_demarrage", "terme_convention", mode="before")
     @classmethod
-    def check_date_format(cls, raw_date):
+    def check_date_format(cls, raw_date: str) -> str:
         """
-        wrapper to call to_iso_date used by models
+        wrapper to call to_convention_date_format used by models
         """
-        return to_iso_date(raw_date)
+        return to_convention_date_format(raw_date)
 
-    def to_uid(self):
+    @field_validator(
+        "montant_convention", "recettes_convention", "depenses_convention", mode="after"
+    )
+    @classmethod
+    def normalize_montant_convention(cls, raw_montant: str) -> str:
+        """
+        Normalize montant_convention by removing spaces and
+        replacing commas with dots to ease NonNegativeFloat parsing.
+        """
+        try:
+            if len(raw_montant) == 0:
+                return raw_montant
+            cleaned_montant = raw_montant.replace(" ", "").replace(",", ".")
+            NonNegativeFloat(cleaned_montant)  # Try to convert if the conversion works
+            return cleaned_montant
+        except ValueError as e:
+            raise ValueError(f"Invalid montant format: {raw_montant}") from e
+
+    def to_uid(self) -> str:
         """Convert reference to activity's uid"""
         return self.reference
 
-    def to_label(self):
+    def to_acronym(self) -> str:
+        """
+        Use partenaire and porteur lastname
+        to create activity's acronym automatically
+        It is an unofficial acronym indicated with ~
+        """
+        # pylint: disable=E1101
+        return "~" + self.partenaire + " " + self.porteur.split()[-1]
+
+    def to_projectlabel(self) -> str:
+        """Convert reference to activity's projectlabel"""
+        return self.titre
+
+    def to_label(self) -> str:
         """Convert titre to activity's label"""
         return self.titre
 
-    def to_persons(self):
-        """Convert porteur & createur to activity's persons"""
-        return {"Porteur": self.porteur, "Créateur": self.createur}
+    def to_persons(self) -> dict:
+        """Convert some persons to activity's persons"""
 
-    def to_organizations(self):
-        """Convert structure_porteur & partenaire to activity's organizations"""
-        return {
-            "Structure Porteur": self.structure_porteur,
-            "Partenaire": self.partenaire,
+        temp_data = {
+            convert_role_for_activity(PORTEUR_ALIAS): self.porteur,
         }
+        result = {key: value for key, value in temp_data.items() if value}
+        return result
 
-    def to_activity_type(self):
+    def to_organizations(self) -> dict:
+        """Convert structure_porteur & partenaire to activity's organizations"""
+
+        temp_data = {}
+        result = {key: value for key, value in temp_data.items() if value}
+        return result
+
+    def to_activity_type(self) ->str:
         """
         Converts type to activity's type.
-        [TEMPORARY IMPLEMENTATION] This method currently returns an empty string as a placeholder.
         """
-        return ""
+        return self.sous_type
 
-    def to_datestart(self):
+    def to_financial_impact(self) -> FinancialImpactEnum:
+        """
+        Convert to FinancialImpactEnum based Recette/Dépense value.
+        """
+        recettes_len = len(self.recettes_convention)
+        depenses_len = len(self.depenses_convention)
+
+        if recettes_len == 0 and depenses_len == 0:
+            return FinancialImpactEnum.AUCUNE
+
+        if recettes_len > 0 and depenses_len > 0:
+            raise ValueError(
+                "Both recettes_convention and depenses_convention cannot have value simultaneously."
+            )
+        return (
+            FinancialImpactEnum.RECETTE
+            if recettes_len > 0
+            else FinancialImpactEnum.DEPENSE
+        )
+
+    def to_amount(self) -> NonNegativeFloat:
+        """
+        Converts to amount if recettes has a value or depenses has a value.
+        """
+        try:
+            amount = 0.0
+            for str_amount in (
+                self.recettes_convention,
+                self.depenses_convention,
+                self.montant_convention,
+            ):
+                if str_amount != "":
+                    amount += NonNegativeFloat(str_amount)
+            return amount
+        except ValueError as e:
+            raise ValueError(
+                f"Invalid float value montant: {self.montant_convention},"
+                f"recettes: {self.recettes_convention}"
+                f"depenses: {self.depenses_convention}"
+                f"for {self.reference}, amount equal 0 instead !",
+            ) from e
+
+    def to_datestart(self) -> str:
         """Convert DateDemarrage to activity's datestart"""
-        return self.date_demarrage
+        return to_activity_date_format(self.date_demarrage)
 
-    def to_dateend(self):
+    def to_dateend(self) -> str:
         """Convert TermeConvention to activity's dateend"""
-        return self.terme_convention
+        return to_activity_date_format(self.terme_convention)
 
-    def to_milestones(self):
+    def to_milestones(self) -> list[Milestone]:
         """Convert Etape to activity's milestones"""
-        return [
-            Milestone(type=item["Title"]) for item in self.etape if item.get("Active")
-        ]
+        return []

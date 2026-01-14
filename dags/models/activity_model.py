@@ -1,63 +1,31 @@
-from enum import Enum
-from datetime import datetime
-from pydantic import BaseModel, Field, model_validator, field_validator, PositiveFloat
-from utils.iso_date import DATE_PATTERN, to_iso_date, ensure_start_before_end
-
-
-class FinancialImpactEnum(str, Enum):
-    """
-    3 possibles values for FinancialImpact
-    """
-
-    AUCUNE = "Aucune"
-    RECETTE = "Recette"
-    DEPENSE = "Dépense"
-
-
-class CurrencyEnum(str, Enum):
-    """
-    4 possible values for Currency
-    """
-
-    EURO = "Euro"
-    YENS = "Yens"
-    LIVRE = "Livre"
-    DOLLARS = "Dollars"
-
-
-class StatusEnum(int, Enum):
-    """
-    Possible values for Status
-    """
-
-    ACTIF = 101
-    BROUILLON = 102
-    DEPOSE = 103
-    TERMINE = 200
-    RESILIE = 201
-    ABANDONNE = 250
-    REFUSE = 201  # alias pour RESILIE
-    CONFLIT = 404  # Pas de statut
-
-
-class Payment(BaseModel):
-    """
-    Payment in activity fields with required fields to import in OSCAR
-    """
-
-    amount: PositiveFloat
-    date: str | None = Field(default=None, pattern=DATE_PATTERN)
-    predicted: str | None = Field(default=None, pattern=DATE_PATTERN)
-
-
-class Milestone(BaseModel):
-    """
-    Milestone in activity fields with required fields to import in OSCAR
-    """
-
-    type: str
-    date: str | None = Field(default=None, pattern=DATE_PATTERN)
-    description: str = ""
+from pydantic import (
+    BaseModel,
+    Field,
+    model_validator,
+    field_validator,
+    NonNegativeFloat,
+)
+from utils.type_utils import CONVENTION_SOUS_TYPE_ENUM, ACTIVITY_TYPE_ENUM
+from utils.date_utils import (
+    ACTIVITY_DATE_PATTERN,
+    to_activity_date_format,
+    to_convention_date_format,
+    ensure_start_before_end,
+)
+from utils.aliases import (
+    PORTEUR_ALIAS,
+    STRUCTURE_PORTEUR_ALIAS,
+    RESPONSABLE_PORTEUR_ALIAS,
+    REFERENT_DAJI_ALIAS,
+    PARTENAIRE_ALIAS,
+    convert_role_for_activity,
+)
+from models.convention_model import OrigineEnum
+from models.submodels import (
+    Payment,
+    Milestone,
+)
+from models.enum_models import CurrencyEnum, FinancialImpactEnum, StatusEnum
 
 
 class Activity(BaseModel):
@@ -66,24 +34,24 @@ class Activity(BaseModel):
     """
 
     uid: str
-    acronym: str = Field(default_factory=lambda: datetime.now().date().isoformat())
-    projectlabel: str = Field(default_factory=lambda: datetime.now().date().isoformat())
+    acronym: str = Field(default_factory=lambda: "~")
+    projectlabel: str = Field(default_factory=lambda: "~")
     label: str
     persons: dict = {}
     organizations: dict = {}
     description: str = ""
-    datestart: str | None = Field(default=None, pattern=DATE_PATTERN)
-    dateend: str | None = Field(default=None, pattern=DATE_PATTERN)
-    datesigned: str | None = Field(default=None, pattern=DATE_PATTERN)
-    datePFI: str | None = Field(default=None, pattern=DATE_PATTERN)
+    datestart: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
+    dateend: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
+    datesigned: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
+    datePFI: str | None = Field(default=None, pattern=ACTIVITY_DATE_PATTERN)
     pfi: str = ""
-    type: str = ""
-    amount: PositiveFloat | None = None
-    tva: PositiveFloat | None = None
+    type: ACTIVITY_TYPE_ENUM | CONVENTION_SOUS_TYPE_ENUM = "Autre"
+    amount: NonNegativeFloat | None = None
+    tva: NonNegativeFloat | None = None
     currency: CurrencyEnum = CurrencyEnum.EURO
     financialImpact: FinancialImpactEnum = FinancialImpactEnum.AUCUNE
     milestones: list[Milestone] = []
-    status: StatusEnum = StatusEnum.CONFLIT
+    status: StatusEnum = StatusEnum.ACTIF
     payments: list[Payment] = []
 
     @model_validator(mode="after")
@@ -98,7 +66,7 @@ class Activity(BaseModel):
         )
         return activity
 
-    @field_validator("persons", "organizations")
+    @field_validator("persons", "organizations", mode="after")
     @classmethod
     def check_dict_format(cls, v):
         """
@@ -121,49 +89,105 @@ class Activity(BaseModel):
 
     @field_validator("datestart", "dateend", "datesigned", mode="before")
     @classmethod
-    def check_date_format(cls, raw_date):
-        """wrapper to call to_iso_date used by models"""
-        return to_iso_date(raw_date)
+    def check_date_format(cls, raw_date) -> str:
+        """wrapper to call to_activity_date_format used by models"""
+        return to_activity_date_format(raw_date)
 
-    def to_reference(self):
+    def to_reference(self) -> str:
         """Convert uid to convention's reference"""
-        return self.to_uid()
+        return self.uid
 
-    def to_titre(self):
+    def to_titre(self) -> str:
         """Convert label to convention's title"""
         return self.label
 
-    def to_porteur(self):
+    @classmethod
+    def get_str_from_dict(cls, alias_key: str, field_value: dict) -> str:
+        """
+        Getting value from dict, if it's None then return ""
+        unless it's Porteur because it's a mandatory field
+        """
+        value = field_value.get(alias_key)
+        if value is None:
+            return value if alias_key == PORTEUR_ALIAS else ""
+        return value[0]
+
+    def to_porteur(self) -> str:
         """Convert part of persons to convention's porteur"""
-        return self.persons.get("Porteur")
+        return self.get_str_from_dict(
+            convert_role_for_activity(PORTEUR_ALIAS), self.persons
+        )
 
-    def to_createur(self):
-        """Convert part of persons to convention's createur"""
-        return self.persons.get("Createur")
+    def to_responsable_porteur(self) -> str:
+        """Convert part of persons to convention's responsable porteur"""
+        return self.get_str_from_dict(RESPONSABLE_PORTEUR_ALIAS, self.persons)
 
-    def to_structure(self):
+    def to_referent_daji(self) -> str:
+        """Convert part of persons to convention's referent"""
+        return self.get_str_from_dict(REFERENT_DAJI_ALIAS, self.persons)
+
+    def to_structure(self) -> str:
         """Convert a part of organizations to convention's structure"""
-        return self.organizations.get("Structure")
+        return self.get_str_from_dict(STRUCTURE_PORTEUR_ALIAS, self.organizations)
 
-    def to_partenaire(self):
+    def to_partenaire(self) -> str:
         """Convert a part of organizations to convention's partenaire"""
-        return self.organizations.get("Partenaire")
+        return self.get_str_from_dict(PARTENAIRE_ALIAS, self.organizations)
 
-    def to_convention_type(self):
+    def to_convention_type(self) -> str:
         """
         Convert type to convention's type
-        [TEMPORARY IMPLEMENTATION] This method currently returns an empty string as a placeholder.
         """
-        return ""
+        return "Recherche"
 
-    def to_date_demarrage(self):
+    def to_convention_sous_type(self) -> str:
+        """
+        Convert type to convention's type
+        """
+        return self.type
+
+    def to_convention_origin(self) -> str:
+        """
+        Convert type to convention's origin
+        if it's fund by a partner then it's Partenaire,
+        else Interne
+        """
+        if self.get_str_from_dict(PARTENAIRE_ALIAS, self.organizations) == "":
+            return OrigineEnum.INTERNE
+        return OrigineEnum.PARTENAIRE
+
+    def to_convention_montant(self) -> str:
+        """Convert amount to convention's montant based on financial impact"""
+        return (
+            f"{self.amount:.2f}"
+            if self.financialImpact == FinancialImpactEnum.AUCUNE
+            else ""
+        )
+
+    def to_convention_recettes(self) -> str:
+        """Convert amount to convention's recettes based on financial impact"""
+        return (
+            f"{self.amount:.2f}"
+            if self.financialImpact == FinancialImpactEnum.RECETTE
+            else ""
+        )
+
+    def to_convention_depenses(self) -> str:
+        """Convert amount to convention's depenses based on financial impact"""
+        return (
+            f"{self.amount:.2f}"
+            if self.financialImpact == FinancialImpactEnum.DEPENSE
+            else ""
+        )
+
+    def to_date_demarrage(self) -> str:
         """Convert datestart to convention's date_demarrage"""
-        return self.datestart
+        return to_convention_date_format(self.datestart)
 
-    def to_terme_convention(self):
+    def to_terme_convention(self) -> str:
         """Convert dateend to convention's terme_convention"""
-        return self.dateend
+        return to_convention_date_format(self.dateend)
 
-    def to_etape(self):
-        """Convert milestones to convention's etape"""
-        return self.milestones
+    def to_etape(self) -> str:
+        """Return to convention's initial etape"""
+        return "0 - Brouillon"

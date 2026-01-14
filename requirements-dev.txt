@@ -23,6 +23,7 @@ asgiref==3.9.1
 astroid==3.3.11
 asyncpg==0.30.0
 attrs==25.3.0
+black==25.1.0
 blinker==1.9.0
 cadwyn==5.4.3
 certifi==2025.7.9
@@ -98,6 +99,8 @@ pydantic==2.11.7
 pydantic_core==2.33.2
 Pygments==2.19.2
 PyJWT==2.10.1
+pylint==3.3.7
+pytest==8.4.1
 python-daemon==3.1.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1

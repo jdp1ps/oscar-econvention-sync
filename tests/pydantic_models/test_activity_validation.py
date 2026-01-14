@@ -7,11 +7,10 @@ IMPOSTOR_VALUE = 18062018
 
 def test_persons_is_normalized(activity_expected_data):
     """Ensure it extracts persons properly from a dict"""
-    valid_raw_data = activity_expected_data[1]
+    valid_raw_data = activity_expected_data[0]
     valid_activity_model = Activity.model_validate(valid_raw_data)
     assert valid_activity_model.persons == {
-        "Porteur": ["Amel Dabiba-Mahdbi"],
-        "Créateur": ["econvention"],
+        "Chargé(e) de valorisation": ["Carine Souveyet Jarosz"],
     }
 
     valid_raw_data["persons"] = {"Role": "Membre"}
@@ -30,12 +29,9 @@ def test_persons_is_normalized(activity_expected_data):
 
 def test_organizations_is_normalized(activity_expected_data):
     """Ensure it extracts organizations properly from dict"""
-    valid_raw_data = activity_expected_data[1]
+    valid_raw_data = activity_expected_data[0]
     valid_activity_model = Activity.model_validate(valid_raw_data)
-    assert valid_activity_model.organizations == {
-        "Structure Porteur": ["Structure1"],
-        "Partenaire": ["Partenaire 1", "Partenaire 2"],
-    }
+    assert valid_activity_model.organizations == {}
 
     valid_raw_data["organizations"] = {"Role": "Membre"}
     valid_activity_model = Activity.model_validate(valid_raw_data)
@@ -56,17 +52,17 @@ def test_date_is_iso_format(activity_expected_data, unique_logical_date):
     Ensure that date fields has format YYYY-MM-DD.
     then ensure an exception is raised when a date is invalid
     """
-    valid_raw_data = activity_expected_data[1]
+    valid_raw_data = activity_expected_data[0]
     valid_convention_model = Activity.model_validate(valid_raw_data)
-    assert valid_convention_model.datestart == "2025-05-20"
+    assert valid_convention_model.datestart == "2024-09-01"
 
-    valid_raw_data["datestart"] = "20/05/2025"
+    valid_raw_data["datestart"] = "20/05/2025 00:00"
     valid_convention_bis = Activity.model_validate(valid_raw_data)
     assert valid_convention_bis.datestart == "2025-05-20"
 
-    valid_raw_data["datestart"] = str(unique_logical_date)
+    valid_raw_data["datestart"] = unique_logical_date.date().isoformat()
     valid_convention_bis = Activity.model_validate(valid_raw_data)
-    assert valid_convention_bis.datestart == str(unique_logical_date.date().isoformat())
+    assert valid_convention_bis.datestart == unique_logical_date.strftime("%Y-%m-%d")
 
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["datestart"] = str(IMPOSTOR_VALUE)
@@ -81,9 +77,9 @@ def test_date_is_iso_format(activity_expected_data, unique_logical_date):
 
 def test_amount_is_normalized(activity_expected_data):
     """Ensure it extracts amount properly from dict"""
-    valid_raw_data = activity_expected_data[1]
+    valid_raw_data = activity_expected_data[0]
     valid_convention_model = Activity.model_validate(valid_raw_data)
-    assert valid_convention_model.amount is None
+    assert valid_convention_model.amount == 500000.50
 
     valid_raw_data["amount"] = 666
     valid_convention_bis = Activity.model_validate(valid_raw_data)
@@ -93,6 +89,10 @@ def test_amount_is_normalized(activity_expected_data):
     valid_convention_bis = Activity.model_validate(valid_raw_data)
     assert valid_convention_bis.amount == 666.6
 
+    valid_raw_data["amount"] = 0.0
+    valid_convention_bis = Activity.model_validate(valid_raw_data)
+    assert valid_convention_bis.amount == 0.0
+
     invalid_raw_data = valid_raw_data.copy()
     invalid_raw_data["amount"] = -666.6
     with pytest.raises(ValidationError):
@@ -101,11 +101,11 @@ def test_amount_is_normalized(activity_expected_data):
 
 def test_milestones_is_normalized(activity_expected_data):
     """Ensure it extracts milestones properly from list[dict]"""
-    valid_raw_data = activity_expected_data[1]
+    valid_raw_data = activity_expected_data[0]
     valid_activity_model = Activity.model_validate(valid_raw_data)
     assert [
         model.model_dump(mode="json") for model in valid_activity_model.milestones
-    ] == [{"type": "Brouillon", "date": None, "description": ""}]
+    ] == []
 
     valid_raw_data["milestones"] = [
         {
@@ -138,7 +138,7 @@ def test_milestones_is_normalized(activity_expected_data):
 
 def test_payment_is_normalized(activity_expected_data):
     """Ensure it extracts payment properly from list[dict]"""
-    valid_raw_data = activity_expected_data[1]
+    valid_raw_data = activity_expected_data[0]
     valid_convention_model = Activity.model_validate(valid_raw_data)
     assert valid_convention_model.payments == []
 
